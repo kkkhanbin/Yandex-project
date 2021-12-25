@@ -4,11 +4,17 @@ from src.windows.Window import Window
 
 
 class ProfilesWindow(Window):
-    def __init__(self, *args):
+    def __init__(self, parent, *args):
         super().__init__(*args)
+
+        self.parent = parent
 
     def render(self, screen: pygame.Surface):
         pass
 
-    def update(self, event: pygame.event.Event):
+    def update(self, *args):
         pass
+
+    def get_parent(self):
+        return self.parent
+
