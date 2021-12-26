@@ -1,8 +1,8 @@
 import pygame
 
-from src.constants.main_settings import FPS, SIZE, BACKGROUND_COLOR, \
+from constants.main_settings import FPS, SIZE, BACKGROUND_COLOR, \
     START_WINDOW
-from src.windows.Window import Window
+from windows.Window import Window
 
 
 class Game:

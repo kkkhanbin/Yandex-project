@@ -1,9 +1,9 @@
 import pygame
 
-from src.windows.Window import Window
-from src.handlers.ImageHandler import ImageHandler
+from windows.Window import Window
+from handlers.ImageHandler import ImageHandler
 
-from src.constants import start_screen_settings
+from constants import start_screen_settings
 
 
 class StartWindow(Window):

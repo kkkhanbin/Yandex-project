@@ -1,6 +1,6 @@
 import pygame
 
-from src.windows.Window import Window
+from windows.Window import Window
 
 
 class MainMenuWindow(Window):

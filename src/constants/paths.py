@@ -1,2 +1,2 @@
-USER_DATABASE_PATH = 'src/user.sqlite'
-START_SCREEN_BACKGROUND_PATH = 'src/data/images/start_screen_background.jpg'
+USER_DATABASE_PATH = 'user.sqlite'
+START_SCREEN_BACKGROUND_PATH = 'data/images/start_screen_background.jpg'
