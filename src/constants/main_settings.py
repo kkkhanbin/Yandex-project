@@ -1,4 +1,4 @@
-from src.windows.StartWindow import StartWindow
+from src.windows.StartWindow.StartWindow import StartWindow
 
 from src.constants.colors import BLACK
 
