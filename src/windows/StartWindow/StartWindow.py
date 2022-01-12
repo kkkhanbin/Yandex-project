@@ -3,7 +3,7 @@ import pygame
 from windows.Window import Window
 from handlers.ImageHandler import ImageHandler
 
-from constants import start_screen_settings
+from constants.windows.start_window_settings import start_window_settings
 
 
 class StartWindow(Window):
@@ -13,12 +13,12 @@ class StartWindow(Window):
         self.parent = parent
 
         self.image = pygame.transform.scale(ImageHandler().load_image(
-            start_screen_settings.BACKGROUND_PATH),
+            start_window_settings.BACKGROUND_PATH),
             self.get_parent().get_screen_size())
         self.rect = self.image.get_rect()
 
     def render(self, screen: pygame.Surface):
-        screen.blit(self.get_image(), start_screen_settings.SCREEN_POS)
+        screen.blit(self.get_image(), start_window_settings.SCREEN_POS)
 
     def update(self, *args):
         event = args[0]

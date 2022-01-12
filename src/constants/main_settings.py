@@ -1,6 +1,6 @@
-from src.windows.StartWindow.StartWindow import StartWindow
+from windows.StartWindow.StartWindow import StartWindow
 
-from src.constants.colors import BLACK
+from constants.gui.colors import BLACK
 
 FPS = 60
 SIZE = WIDTH, HEIGHT = 500, 500
