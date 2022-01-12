@@ -11,25 +11,3 @@ class Cell(Map):
 
     def update(self, *args):
         pass
-
-
-class CellSprite(Cell):
-    def __init__(self, *arg):
-        super(CellSprite, self).__init__()
-        self.arg = arg
-
-
-class Hero(CellSprite):
-    pass
-
-
-class Spikes(CellSprite):
-    pass
-
-
-class Enemy(CellSprite):
-    pass
-
-
-class Key(CellSprite):
-    pass

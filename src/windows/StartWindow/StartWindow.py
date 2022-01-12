@@ -7,10 +7,8 @@ from constants.windows.start_window_settings import start_window_settings
 
 
 class StartWindow(Window):
-    def __init__(self, parent, *args):
+    def __init__(self, *args):
         super().__init__(*args)
-
-        self.parent = parent
 
         self.image = pygame.transform.scale(ImageHandler().load_image(
             start_window_settings.BACKGROUND_PATH),

@@ -1,5 +1,6 @@
 import pygame
-from src.window.Window import Window
+
+from window.Window import Window
 
 
 class LevelsWindow(MainWindow):
