@@ -30,9 +30,10 @@ class DataBaseHandler:
                columns_names: tuple, values: tuple) -> None:
         cursor = self.get_cursor()
 
-        columns_names = ''
         if columns_names:
             columns_names = f"({', '.join(map(str, columns_names))})"
+        else:
+            columns_names = ''
 
         request = f'''
         INSERT INTO {table_name}{columns_names}
