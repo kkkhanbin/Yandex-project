@@ -1,13 +1,13 @@
 import pygame
+pygame.init()
 
 from constants.main_settings import FPS, SIZE, BACKGROUND_COLOR, \
-    START_WINDOW
+    START_WINDOWS, TITLE
 from windows.Window import Window
 
 
 class Game:
     def __init__(self):
-        pygame.init()
         self.running = True
 
         self.screen = pygame.display.set_mode(SIZE)
@@ -15,14 +15,16 @@ class Game:
 
         self.background_color = BACKGROUND_COLOR
         self.fps = FPS
+        self.title = TITLE
 
-        self.current_windows = [START_WINDOW(self)]
+        self.current_windows = self.load_current_windows()
 
         self.run()
 
     def run(self):
         while self.get_running():
             self.get_screen().fill(self.get_background_color())
+            pygame.display.set_caption(self.get_title())
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -60,6 +62,9 @@ class Game:
     def get_screen_size(self) -> tuple:
         return self.get_screen().get_size()
 
+    def get_title(self) -> str:
+        return self.title
+
     def update_current_windows(self, *args):
         for current_window in self.get_current_windows():
             current_window.update(*args)
@@ -70,6 +75,12 @@ class Game:
 
     def delete_current_window(self, window: Window):
         self.get_current_windows().remove(window)
+
+    def add_current_window(self, window: Window):
+        self.get_current_windows().append(window)
+
+    def load_current_windows(self) -> list:
+        return list(map(lambda window: window(self), START_WINDOWS))
 
 
 Game()

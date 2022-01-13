@@ -1,15 +1,30 @@
 import pygame
+from abc import ABCMeta, abstractmethod, abstractproperty
 
 
 class Window:
     def __init__(self, parent):
         self.parent = parent
 
-    def render(self, screen: pygame.Surface):
-        pass
+        self.screen = pygame.Surface(parent.get_screen_size())
+        self.pos = 0, 0
 
+    def render(self, screen: pygame.Surface):
+        screen.blit(self.get_screen(), self.get_pos())
+
+    @abstractmethod
     def update(self, *args):
         pass
 
+    def flip_window(self, window):
+        self.get_parent().delete_current_window(self)
+        self.get_parent().add_current_window(window)
+
     def get_parent(self):
         return self.parent
+
+    def get_screen(self) -> pygame.Surface:
+        return self.screen
+
+    def get_pos(self) -> tuple:
+        return self.pos

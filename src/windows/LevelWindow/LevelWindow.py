@@ -3,6 +3,6 @@ import pygame
 from window.Window import Window
 
 
-class GameWindow(Window):
+class LevelWindow(Window):
     def __init__(self, *args):
-        super(GameWindow, self).__init__(*args)
+        super(LevelWindow, self).__init__(*args)

@@ -1,6 +1,7 @@
 import pygame
 
 from windows.Window import Window
+from windows.MainMenuWindow.MainMenuWindow import MainMenuWindow
 from handlers.ImageHandler import ImageHandler
 
 from constants.windows.start_window_settings import start_window_settings
@@ -25,10 +26,7 @@ class StartWindow(Window):
             self.get_parent().set_running(False)
         elif event.type == pygame.KEYDOWN or \
                 event.type == pygame.MOUSEBUTTONDOWN:
-            self.get_parent().delete_current_window(self)
-
-    def get_parent(self):
-        return self.parent
+            self.flip_window(MainMenuWindow(self.get_parent()))
 
     def get_image(self) -> pygame.Surface:
         return self.image
