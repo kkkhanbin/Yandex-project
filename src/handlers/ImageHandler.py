@@ -2,7 +2,8 @@ import pygame
 
 
 class ImageHandler:
-    def load_image(self, path: str, color_key=None) -> pygame.Surface:
+    @staticmethod
+    def load_image(path: str, color_key=None) -> pygame.Surface:
         image = pygame.image.load(path)
 
         if color_key is not None:
