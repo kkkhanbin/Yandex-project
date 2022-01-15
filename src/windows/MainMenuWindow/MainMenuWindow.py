@@ -1,10 +1,11 @@
 import pygame
 
 from windows.Window import Window
-from handlers.Button import Button
 
+from handlers.Button import Button
 from handlers.TextHandler import TextHandler
 
+from constants.windows.windows_names import START_WINDOW_NAME
 from constants.windows.main_menu_window_settings.main_menu_window_settings \
     import BUTTON_SIZE
 
@@ -20,13 +21,11 @@ class MainMenuWindow(Window):
 
     # Добавляет кнопки в группу спрайтов
     def add_buttons(self, buttons: pygame.sprite.Group) -> None:
-        Button((0, 0), (
-            self.get_screen().get_width() * self.get_button_width(),
-            self.get_screen().get_height() * self.get_button_height()),
-               self.test_button_func, buttons)
+        button_size = self.get_screen().get_width() * self.get_button_width(),\
+                      self.get_screen().get_height() * self.get_button_height()
 
-    def test_button_func(self):
-        print('Тест')
+        Button((100, 200), button_size,
+               (self.flip_window, (self.get_parent().get_windows()[START_WINDOW_NAME],), {}), buttons)
 
     def render(self, screen: pygame.Surface):
         super().render(screen)
