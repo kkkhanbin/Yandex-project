@@ -7,15 +7,18 @@ from constants.paths import DEFAULT_BUTTON_PATH
 
 class Button(pygame.sprite.Sprite):
     def __init__(self, pos: tuple, size: tuple,
-                 action, *groups, image_path: tuple = DEFAULT_BUTTON_PATH):
+                 action: tuple, *groups, image_path: tuple = DEFAULT_BUTTON_PATH):
         super().__init__(*groups)
 
         self.pos = pos
         self.image = pygame.transform.scale(
             ImageHandler.load_image(image_path), size)
-        self.action = action
+        self.action = action[0]
+        self.action_args = action[1]
+        self.action_kwargs = action[2]
 
         self.rect = self.get_image().get_rect()
+        self.update_rect()
 
     def is_pos_inside(self, pos: tuple) -> bool:
         return self.get_rect().collidepoint(*pos)
@@ -24,7 +27,13 @@ class Button(pygame.sprite.Sprite):
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == pygame.BUTTON_LEFT:
                 if self.is_pos_inside(event.pos):
-                    self.action()
+                    action, args, kwargs = self.get_action_info()
+                    action(*args, **kwargs)
+
+    def update_rect(self):
+        x, y = self.get_pos()
+        self.get_rect().x = x
+        self.get_rect().y = y
 
     def get_image(self) -> pygame.Surface:
         return self.image
@@ -40,7 +49,11 @@ class Button(pygame.sprite.Sprite):
 
     def set_pos(self, pos: tuple):
         self.pos = pos
+        self.update_rect()
         return self
 
     def get_rect(self) -> pygame.Rect:
         return self.rect
+
+    def get_action_info(self) -> tuple:
+        return self.action, self.action_args, self.action_kwargs

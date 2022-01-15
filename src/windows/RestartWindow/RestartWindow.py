@@ -1,6 +1,6 @@
 import pygame
 
-from window.Window import Window
+from windows.Window import Window
 
 
 class RestartWindow(Window):

@@ -1,9 +1,8 @@
-from windows.StartWindow.StartWindow import StartWindow
-
 from constants.gui.colors import BLACK
+from constants.windows.windows_names import START_WINDOW_NAME
 
 FPS = 60
 SIZE = WIDTH, HEIGHT = 500, 500
 BACKGROUND_COLOR = BLACK
-START_WINDOWS = [StartWindow]
+START_WINDOWS_NAMES = [START_WINDOW_NAME]
 TITLE = 'Yandex Project'

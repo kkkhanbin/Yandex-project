@@ -2,8 +2,20 @@ import pygame
 pygame.init()
 
 from constants.main_settings import FPS, SIZE, BACKGROUND_COLOR, \
-    START_WINDOWS, TITLE
+    START_WINDOWS_NAMES, TITLE
+from constants.windows.windows_names import *
+
 from windows.Window import Window
+
+from windows.MainMenuWindow.MainMenuWindow import MainMenuWindow
+from windows.StartWindow.StartWindow import StartWindow
+from windows.LevelsListWindow.LevelsListWindow import LevelsListWindow
+from windows.LevelWindow.LevelWindow import LevelWindow
+from windows.ProfileActionsMenuWindow.ProfileActionsMenuWindow import \
+    ProfileActionsMenuWindow
+from windows.ProfilesMenuWindow.ProfilesMenuWindow import ProfilesMenuWindow
+from windows.RestartWindow.RestartWindow import RestartWindow
+from windows.StatisticsWindow.StatisticsWindow import StatisticsWindow
 
 
 class Game:
@@ -17,7 +29,10 @@ class Game:
         self.fps = FPS
         self.title = TITLE
 
-        self.current_windows = self.load_current_windows()
+        self.windows = {}
+        self.add_windows(self.windows)
+        self.current_windows = []
+        self.add_start_windows(self.current_windows)
 
         self.run()
 
@@ -67,6 +82,7 @@ class Game:
 
     def update_current_windows(self, *args):
         for current_window in self.get_current_windows():
+            print(current_window)
             current_window.update(*args)
 
     def render_current_windows(self, screen: pygame.Surface):
@@ -79,8 +95,23 @@ class Game:
     def add_current_window(self, window: Window):
         self.get_current_windows().append(window)
 
-    def load_current_windows(self) -> list:
-        return list(map(lambda window: window(self), START_WINDOWS))
+    def add_start_windows(self, windows: list) -> None:
+        for window_name in START_WINDOWS_NAMES:
+            windows.append(self.get_windows()[window_name])
+
+    def add_windows(self, windows: dict) -> None:
+        windows_list = [(START_WINDOW_NAME, StartWindow),
+            (MAIN_MENU_WINDOW_NAME, MainMenuWindow),
+            (LEVELS_LIST_WINDOW_NAME, LevelsListWindow),
+            (PROFILE_ACTIONS_MENU_WINDOW_NAME,
+             ProfileActionsMenuWindow),
+            (PROFILES_MENU_WINDOW_NAME, ProfilesMenuWindow)]
+
+        for window in windows_list:
+            windows[window[0]] = window[1](self)
+
+    def get_windows(self) -> dict:
+        return self.windows
 
 
 Game()
