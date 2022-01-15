@@ -1,18 +1,14 @@
 import pygame
 
-from handlers.ImageHandler import ImageHandler
-
-from constants.paths import DEFAULT_BUTTON_PATH
-
 
 class Button(pygame.sprite.Sprite):
-    def __init__(self, pos: tuple, size: tuple,
-                 action: tuple, *groups, image_path: tuple = DEFAULT_BUTTON_PATH):
+    def __init__(self, pos: tuple, action: tuple, image: pygame.Surface,
+                 *groups):
         super().__init__(*groups)
 
         self.pos = pos
-        self.image = pygame.transform.scale(
-            ImageHandler.load_image(image_path), size)
+        self.image = image
+
         self.action = action[0]
         self.action_args = action[1]
         self.action_kwargs = action[2]

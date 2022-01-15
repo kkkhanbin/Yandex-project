@@ -82,7 +82,6 @@ class Game:
 
     def update_current_windows(self, *args):
         for current_window in self.get_current_windows():
-            print(current_window)
             current_window.update(*args)
 
     def render_current_windows(self, screen: pygame.Surface):
