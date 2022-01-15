@@ -8,7 +8,6 @@ from constants.paths import DEFAULT_BUTTON_PATH
 class Button(pygame.sprite.Sprite):
     def __init__(self, pos: tuple, size: tuple,
                  action, *groups, image_path: tuple = DEFAULT_BUTTON_PATH):
-        print(groups)
         super().__init__(*groups)
 
         self.pos = pos
@@ -19,7 +18,7 @@ class Button(pygame.sprite.Sprite):
         self.rect = self.get_image().get_rect()
 
     def is_pos_inside(self, pos: tuple) -> bool:
-        return self.get_rect().contains(pygame.Rect(*pos, 1, 1))
+        return self.get_rect().collidepoint(*pos)
 
     def update(self, event: pygame.event.Event):
         if event.type == pygame.MOUSEBUTTONDOWN:
