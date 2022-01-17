@@ -5,6 +5,8 @@ from windows.Window import Window
 from handlers.TextHandler import TextHandler
 from handlers.ImageHandler import ImageHandler
 
+from widgets.Buttons.PushButton.PushButton import PushButton
+
 from constants.gui import colors
 from constants.windows.windows_names import START_WINDOW_NAME, \
     SETTINGS_WINDOW_NAME, PROFILES_MENU_WINDOW_NAME, LEVEL_EDITOR_WINDOW_NAME
@@ -13,42 +15,42 @@ from constants.windows.main_menu_window_settings.main_menu_window_settings \
     OPEN_PROFILES_MENU_WINDOW_BUTTON_POS, OPEN_SETTINGS_WINDOW_BUTTON_PATH, \
     OPEN_SETTINGS_WINDOW_BUTTON_POS, OPEN_LEVEL_EDITOR_WINDOW_BUTTON_PATH, \
     OPEN_LEVEL_EDITOR_WINDOW_BUTTON_POS, TITLE_FONT_SIZE, TITLE_POS, \
-    BACKGROUND_IMAGE_PATH, BACKGROUND_IMAGE_POS
+    BACKGROUND_IMAGE_PATH, BACKGROUND_IMAGE_POS, \
+    OPEN_PROFILES_MENU_WINDOW_BUTTON_NAME, OPEN_SETTINGS_WINDOW_BUTTON_NAME, \
+    OPEN_LEVEL_EDITOR_WINDOW_BUTTON_NAME
 
 
 class MainMenuWindow(Window):
     def __init__(self, *args):
         super().__init__(*args)
 
-        self.buttons = pygame.sprite.Group()
+        self.buttons = []
         self.add_background()
         self.add_buttons()
         self.add_text()
 
     # Добавляет кнопки в группу спрайтов
     def add_buttons(self) -> None:
-        buttons = self.setup_buttons()
-        for button in buttons:
-            self.add_button(*button, self.get_buttons())
+        buttons_args = self.setup_buttons()
+        for buttons_arg in buttons_args:
+            action, name, pos, image_path, size, colorkey = buttons_arg
+
+            pos = self.convert_percent(pos)
+            image = pygame.transform.scale(
+                ImageHandler.load_image(image_path, colorkey), size)
+
+            button = PushButton(action, name, pos, image)
+            self.get_buttons().append(button)
 
     def setup_buttons(self) -> list:
         default_button_size = self.convert_percent(DEFAULT_BUTTON_SIZE)
 
-        # Действие кнопки, позиция, путь к ее картинке, размер, colorkey
-        buttons = \
-            [((self.flip_window, (
-                self.get_parent().get_windows()
-                [PROFILES_MENU_WINDOW_NAME],), {}),
-              OPEN_PROFILES_MENU_WINDOW_BUTTON_POS,
-              OPEN_PROFILES_MENU_WINDOW_BUTTON_PATH, default_button_size, -1),
-             ((self.flip_window, (
-                 self.get_parent().get_windows()[SETTINGS_WINDOW_NAME],), {}),
-              OPEN_SETTINGS_WINDOW_BUTTON_POS,
-              OPEN_SETTINGS_WINDOW_BUTTON_PATH, default_button_size, -1),
-             ((self.flip_window, (
-                 self.get_parent().get_windows()[START_WINDOW_NAME],), {}),
-              OPEN_LEVEL_EDITOR_WINDOW_BUTTON_POS,
-              OPEN_LEVEL_EDITOR_WINDOW_BUTTON_PATH, default_button_size, -1)]
+        # action_info, name, pos, image_path
+        buttons = [
+            ((self.flip_window, (self.get_parent().get_windows()[SETTINGS_WINDOW_NAME],), {}), OPEN_SETTINGS_WINDOW_BUTTON_NAME, OPEN_SETTINGS_WINDOW_BUTTON_POS, OPEN_SETTINGS_WINDOW_BUTTON_PATH, default_button_size, -1),
+            ((self.flip_window, (self.get_parent().get_windows()[START_WINDOW_NAME],), {}), OPEN_LEVEL_EDITOR_WINDOW_BUTTON_NAME, OPEN_LEVEL_EDITOR_WINDOW_BUTTON_POS, OPEN_LEVEL_EDITOR_WINDOW_BUTTON_PATH, default_button_size, -1),
+            ((self.flip_window, (self.get_parent().get_windows()[PROFILES_MENU_WINDOW_NAME],), {}), OPEN_PROFILES_MENU_WINDOW_BUTTON_NAME, OPEN_PROFILES_MENU_WINDOW_BUTTON_POS, OPEN_PROFILES_MENU_WINDOW_BUTTON_PATH, default_button_size, -1),
+        ]
 
         return buttons
 
@@ -68,17 +70,21 @@ class MainMenuWindow(Window):
             self.get_parent().get_screen_size()), BACKGROUND_IMAGE_POS)
 
     def render(self, screen: pygame.Surface):
+        self.render_buttons(self.get_screen())
+
         super().render(screen)
 
-        self.get_buttons().draw(screen)
+    def render_buttons(self, screen: pygame.Surface):
+        for button in self.get_buttons():
+            button.render(screen)
 
     def update(self, *args):
         event = args[0]
 
-        for button in self.get_buttons().sprites():
+        for button in self.get_buttons():
             button.update(event)
 
-    def get_buttons(self) -> pygame.sprite.Group:
+    def get_buttons(self) -> list:
         return self.buttons
 
     def get_button_size(self) -> tuple:

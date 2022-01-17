@@ -1,9 +1,6 @@
 import pygame
 from abc import abstractmethod
 
-from handlers.Button import Button
-from handlers.ImageHandler import ImageHandler
-
 
 class Window:
     def __init__(self, parent):
@@ -42,11 +39,3 @@ class Window:
             return value[0] * screen_w, value[1] * screen_h
         elif type(value) == list:
             return [value[0] * screen_w, value[1] * screen_h]
-
-    def add_button(self, action: tuple, pos: tuple, image_path: str,
-                   size: tuple, colorkey: int,
-                   buttons_group: pygame.sprite.Group) -> None:
-        pos = self.convert_percent(pos)
-
-        Button(pos, action, pygame.transform.scale(ImageHandler.load_image(
-                   image_path, colorkey), size), buttons_group)
