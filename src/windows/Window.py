@@ -1,6 +1,9 @@
 import pygame
 from abc import abstractmethod
 
+from handlers.Button import Button
+from handlers.ImageHandler import ImageHandler
+
 
 class Window:
     def __init__(self, parent):
@@ -18,7 +21,7 @@ class Window:
 
     def flip_window(self, window):
         self.get_parent().delete_current_window(self)
-        self.get_parent().add_current_window(window)
+        self.get_parent().add_current_window(window(self.get_parent()))
 
     def get_parent(self):
         return self.parent
@@ -28,3 +31,22 @@ class Window:
 
     def get_pos(self) -> tuple:
         return self.pos
+
+    # Конвертирует процентное значение координат в обычное
+    def convert_percent(self, value):
+        screen_w, screen_h = self.get_screen().get_size()
+
+        if type(value) == float or type(value) == int:
+            return max(screen_w, screen_h) * value
+        elif type(value) == tuple:
+            return value[0] * screen_w, value[1] * screen_h
+        elif type(value) == list:
+            return [value[0] * screen_w, value[1] * screen_h]
+
+    def add_button(self, action: tuple, pos: tuple, image_path: str,
+                   size: tuple, colorkey: int,
+                   buttons_group: pygame.sprite.Group) -> None:
+        pos = self.convert_percent(pos)
+
+        Button(pos, action, pygame.transform.scale(ImageHandler.load_image(
+                   image_path, colorkey), size), buttons_group)

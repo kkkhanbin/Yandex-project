@@ -1,4 +1,3 @@
-from src.constants.paths import START_SCREEN_BACKGROUND_PATH
-
-BACKGROUND_PATH = START_SCREEN_BACKGROUND_PATH
-SCREEN_POS = 0, 0
+BACKGROUND_PATH = \
+    'data/images/windows/start_window/start_window_background.jpg'
+BACKGROUND_POS = 0, 0
