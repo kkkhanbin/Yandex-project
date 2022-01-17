@@ -3,19 +3,17 @@ pygame.init()
 
 from constants.main_settings import FPS, SIZE, BACKGROUND_COLOR, \
     START_WINDOWS_NAMES, TITLE
-from constants.windows.windows_names import *
+from constants.windows.windows_names import START_WINDOW_NAME, \
+    MAIN_MENU_WINDOW_NAME, LEVELS_LIST_WINDOW_NAME, PROFILES_MENU_WINDOW_NAME,\
+    RESTART_WINDOW_NAME, SETTINGS_WINDOW_NAME, LEVEL_EDITOR_WINDOW_NAME
 
 from windows.Window import Window
 
+from windows.SettingsWindow.SettingsWindow import SettingsWindow
 from windows.MainMenuWindow.MainMenuWindow import MainMenuWindow
 from windows.StartWindow.StartWindow import StartWindow
 from windows.LevelsListWindow.LevelsListWindow import LevelsListWindow
-from windows.LevelWindow.LevelWindow import LevelWindow
-from windows.ProfileActionsMenuWindow.ProfileActionsMenuWindow import \
-    ProfileActionsMenuWindow
 from windows.ProfilesMenuWindow.ProfilesMenuWindow import ProfilesMenuWindow
-from windows.RestartWindow.RestartWindow import RestartWindow
-from windows.StatisticsWindow.StatisticsWindow import StatisticsWindow
 
 
 class Game:
@@ -96,18 +94,14 @@ class Game:
 
     def add_start_windows(self, windows: list) -> None:
         for window_name in START_WINDOWS_NAMES:
-            windows.append(self.get_windows()[window_name])
+            windows.append(self.get_windows()[window_name](self))
 
     def add_windows(self, windows: dict) -> None:
-        windows_list = [(START_WINDOW_NAME, StartWindow),
-            (MAIN_MENU_WINDOW_NAME, MainMenuWindow),
-            (LEVELS_LIST_WINDOW_NAME, LevelsListWindow),
-            (PROFILE_ACTIONS_MENU_WINDOW_NAME,
-             ProfileActionsMenuWindow),
-            (PROFILES_MENU_WINDOW_NAME, ProfilesMenuWindow)]
-
-        for window in windows_list:
-            windows[window[0]] = window[1](self)
+        windows[START_WINDOW_NAME] = StartWindow
+        windows[MAIN_MENU_WINDOW_NAME] = MainMenuWindow
+        windows[LEVELS_LIST_WINDOW_NAME] = LevelsListWindow
+        windows[PROFILES_MENU_WINDOW_NAME] = ProfilesMenuWindow
+        windows[SETTINGS_WINDOW_NAME] = SettingsWindow
 
     def get_windows(self) -> dict:
         return self.windows
