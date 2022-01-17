@@ -12,13 +12,14 @@ class StartWindow(Window):
     def __init__(self, *args):
         super().__init__(*args)
 
-        self.image = pygame.transform.scale(ImageHandler().load_image(
-            start_window_settings.BACKGROUND_PATH),
-            self.get_parent().get_screen_size())
-        self.rect = self.image.get_rect()
+        self.add_background()
 
-    def render(self, screen: pygame.Surface):
-        screen.blit(self.get_image(), start_window_settings.SCREEN_POS)
+    def add_background(self):
+        self.get_screen().blit(pygame.transform.scale(ImageHandler.load_image(
+            start_window_settings.BACKGROUND_PATH),
+            self.get_parent().get_screen_size()),
+            start_window_settings.BACKGROUND_POS)
+        self.rect = self.get_screen().get_rect()
 
     def update(self, *args):
         event = args[0]
@@ -30,5 +31,3 @@ class StartWindow(Window):
             self.flip_window(self.get_parent().get_windows()
                              [MAIN_MENU_WINDOW_NAME])
 
-    def get_image(self) -> pygame.Surface:
-        return self.image
