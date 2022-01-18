@@ -2,10 +2,10 @@ import pygame
 
 from windows.Window import Window
 
-from handlers.ImageHandler import ImageHandler
+from handlers.ImageHandler.ImageHandler import ImageHandler
 
 from constants.windows.windows_names import MAIN_MENU_WINDOW_NAME
-from constants.windows.start_window_settings import start_window_settings
+from constants.windows.start_window import start_window_settings
 
 
 class StartWindow(Window):

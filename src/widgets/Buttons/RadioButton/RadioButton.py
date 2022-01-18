@@ -2,9 +2,11 @@ import pygame
 
 from widgets.Buttons.Button import Button
 
+from constants.gui import colors
+
 
 class RadioButton(Button):
-    def __init__(self, group, selection_color: pygame.color, *args):
+    def __init__(self, group, selection_color: pygame.color=colors.RED, *args):
         super().__init__(*args)
 
         self.selection_color = selection_color

@@ -1,5 +1,5 @@
-import pygame
 from abc import abstractmethod
+import pygame
 
 
 class Window:

@@ -4,7 +4,7 @@ pygame.init()
 from constants.main_settings import FPS, SIZE, BACKGROUND_COLOR, \
     START_WINDOWS_NAMES, TITLE
 from constants.windows.windows_names import START_WINDOW_NAME, \
-    MAIN_MENU_WINDOW_NAME, LEVELS_LIST_WINDOW_NAME, PROFILES_MENU_WINDOW_NAME,\
+    MAIN_MENU_WINDOW_NAME, LEVELS_MENU_WINDOW_NAME, PROFILES_MENU_WINDOW_NAME,\
     RESTART_WINDOW_NAME, SETTINGS_WINDOW_NAME, LEVEL_EDITOR_WINDOW_NAME
 
 from windows.Window import Window
@@ -12,7 +12,7 @@ from windows.Window import Window
 from windows.SettingsWindow.SettingsWindow import SettingsWindow
 from windows.MainMenuWindow.MainMenuWindow import MainMenuWindow
 from windows.StartWindow.StartWindow import StartWindow
-from windows.LevelsListWindow.LevelsListWindow import LevelsListWindow
+from windows.LevelsMenuWindow.LevelsMenuWindow import LevelsMenuWindow
 from windows.ProfilesMenuWindow.ProfilesMenuWindow import ProfilesMenuWindow
 
 
@@ -99,7 +99,7 @@ class Game:
     def add_windows(self, windows: dict) -> None:
         windows[START_WINDOW_NAME] = StartWindow
         windows[MAIN_MENU_WINDOW_NAME] = MainMenuWindow
-        windows[LEVELS_LIST_WINDOW_NAME] = LevelsListWindow
+        windows[LEVELS_MENU_WINDOW_NAME] = LevelsMenuWindow
         windows[PROFILES_MENU_WINDOW_NAME] = ProfilesMenuWindow
         windows[SETTINGS_WINDOW_NAME] = SettingsWindow
 
