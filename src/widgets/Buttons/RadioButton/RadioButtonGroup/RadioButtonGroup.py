@@ -24,3 +24,6 @@ class RadioButtonGroup:
 
     def get_checked_button(self):
         return self.get_checked_buttons()[0]
+
+    def add_radio_button(self, radio_button):
+        self.get_radio_buttons().append(radio_button)

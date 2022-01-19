@@ -36,6 +36,6 @@ class Window:
         if type(value) == float or type(value) == int:
             return max(screen_w, screen_h) * value
         elif type(value) == tuple:
-            return value[0] * screen_w, value[1] * screen_h
+            return (value[0] * screen_w, value[1] * screen_h)
         elif type(value) == list:
             return [value[0] * screen_w, value[1] * screen_h]
