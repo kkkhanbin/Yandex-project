@@ -3,8 +3,10 @@ import pygame
 
 
 class Widget:
-    def __init__(self, name: str, pos: tuple, size: tuple):
+    def __init__(self, name: str, pos: tuple, size: tuple,
+                 min_size: tuple=(0, 0)):
         self.name = name
+        self.min_size = min_size
 
         self.rect = pygame.Rect(*pos, *size)
 
@@ -20,3 +22,12 @@ class Widget:
 
     def get_rect(self) -> pygame.Rect:
         return self.rect
+
+    def get_min_size(self) -> tuple:
+        return self.min_size
+
+    def get_min_width(self) -> int:
+        return self.get_min_size()[0]
+
+    def get_min_height(self) -> int:
+        return self.get_min_size()[1]
