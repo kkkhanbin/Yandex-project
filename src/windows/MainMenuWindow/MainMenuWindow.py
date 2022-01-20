@@ -47,19 +47,22 @@ class MainMenuWindow(Window):
 
         buttons = [
             ((self.flip_window,
-              (self.get_parent().get_windows()[SETTINGS_WINDOW_NAME],), {}),
+              (self.get_parent().get_windows()[SETTINGS_WINDOW_NAME]
+               (self.get_parent()),), {}),
              OPEN_SETTINGS_WINDOW_BUTTON_NAME, OPEN_SETTINGS_WINDOW_BUTTON_POS,
              OPEN_SETTINGS_WINDOW_BUTTON_PATH, default_button_size, -1),
 
             ((self.flip_window,
-              (self.get_parent().get_windows()[START_WINDOW_NAME],), {}),
+              (self.get_parent().get_windows()[START_WINDOW_NAME]
+               (self.get_parent()),), {}),
              OPEN_LEVEL_EDITOR_WINDOW_BUTTON_NAME,
              OPEN_LEVEL_EDITOR_WINDOW_BUTTON_POS,
              OPEN_LEVEL_EDITOR_WINDOW_BUTTON_PATH, default_button_size, -1),
 
             ((self.flip_window,
-              (self.get_parent().get_windows()[PROFILES_MENU_WINDOW_NAME],),
-              {}), OPEN_PROFILES_MENU_WINDOW_BUTTON_NAME,
+              (self.get_parent().get_windows()[PROFILES_MENU_WINDOW_NAME]
+               (self.get_parent()),), {}),
+             OPEN_PROFILES_MENU_WINDOW_BUTTON_NAME,
              OPEN_PROFILES_MENU_WINDOW_BUTTON_POS,
              OPEN_PROFILES_MENU_WINDOW_BUTTON_PATH, default_button_size, -1)
         ]

@@ -18,7 +18,7 @@ class Window:
 
     def flip_window(self, window):
         self.get_parent().delete_current_window(self)
-        self.get_parent().add_current_window(window(self.get_parent()))
+        self.get_parent().add_current_window(window)
 
     def get_parent(self):
         return self.parent
@@ -34,8 +34,8 @@ class Window:
         screen_w, screen_h = self.get_screen().get_size()
 
         if type(value) == float or type(value) == int:
-            return max(screen_w, screen_h) * value
+            return round(max(screen_w, screen_h) * value)
         elif type(value) == tuple:
-            return (value[0] * screen_w, value[1] * screen_h)
+            return (round(value[0] * screen_w), round(value[1] * screen_h))
         elif type(value) == list:
-            return [value[0] * screen_w, value[1] * screen_h]
+            return [round(value[0] * screen_w), round(value[1] * screen_h)]

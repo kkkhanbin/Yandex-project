@@ -24,16 +24,13 @@ class RadioButton(Button):
             pygame.draw.rect(
                 image, self.get_selection_color(),
                 pygame.Rect(0, 0, *self.get_rect().size),
-                9)
+                self.get_selection_line_width())
 
         screen.blit(image, self.get_rect())
 
-    def update(self, event: pygame.event.Event):
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == pygame.BUTTON_LEFT:
-                if self.is_pos_inside(event.pos):
-                    self.set_checked(True)
-                    self.get_group().update(self)
+    def click(self):
+        self.set_checked(True)
+        self.get_group().normalize_number_of_checked_buttons(self)
 
     def get_group(self):
         return self.group

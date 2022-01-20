@@ -29,5 +29,5 @@ class StartWindow(Window):
         elif event.type == pygame.KEYDOWN or \
                 event.type == pygame.MOUSEBUTTONDOWN:
             self.flip_window(self.get_parent().get_windows()
-                             [MAIN_MENU_WINDOW_NAME])
+                             [MAIN_MENU_WINDOW_NAME](self.get_parent()))
 

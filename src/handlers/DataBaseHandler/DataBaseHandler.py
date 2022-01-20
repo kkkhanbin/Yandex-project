@@ -37,7 +37,7 @@ class DataBaseHandler:
 
         request = f'''
         INSERT INTO {table_name}{columns_names}
-        VALUES {', '.join(map(str, values))}
+        VALUES({', '.join(map(str, values))})
         '''
 
         cursor.execute(request)
