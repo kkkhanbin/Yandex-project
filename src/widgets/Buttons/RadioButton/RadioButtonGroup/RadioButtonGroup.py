@@ -1,5 +1,3 @@
-
-
 class RadioButtonGroup:
     def __init__(self, radio_buttons: list):
         self.radio_buttons = radio_buttons

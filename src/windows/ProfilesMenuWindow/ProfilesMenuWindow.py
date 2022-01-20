@@ -6,83 +6,130 @@ from handlers.DataBaseHandler.DataBaseHandler import DataBaseHandler
 from handlers.ImageHandler.ImageHandler import ImageHandler
 
 from widgets.Layouts.HorizontalLayout.HorizontalLayout import HorizontalLayout
+from widgets.Layouts.VerticalLayout.VerticalLayout import VerticalLayout
 from widgets.Buttons.RadioButton.RadioButtonGroup.RadioButtonGroup import \
     RadioButtonGroup
 from widgets.Buttons.RadioButton.RadioButton import RadioButton
+from widgets.Buttons.PushButton.PushButton import PushButton
 
+from constants.windows.windows_names import LEVELS_MENU_WINDOW_NAME
+from constants.data_base.data_base_settings import USER_NAMES, \
+    USER_DATABASE_PATH
 from constants.gui import colors
-from constants.main_settings import USER_NAMES
 from constants.windows.profiles_menu_window.profiles_menu_window_settings \
     import PROFILES_LAYOUT_POS, PROFILES_LAYOUT_SPACING, \
-    PROFILES_LAYOUT_NAME, PROFILES_LAYOUT_SIZE, PROFILE_IMAGE_PATH, \
-    RADIO_BUTTON_SELECTION_LINE_WIDTH
+    PROFILES_LAYOUT_NAME, PROFILES_LAYOUT_SIZE, \
+    PROFILE_RADIO_BUTTON_IMAGE_PATH, RADIO_BUTTON_SELECTION_LINE_WIDTH, \
+    RESET_PROGRESS_PUSH_BUTTON_PATH, RESET_PROGRESS_PUSH_BUTTON_NAME, \
+    CONTINUE_GAME_PUSH_BUTTON_NAME, CONTINUE_GAME_PUSH_BUTTON_PATH, \
+    GAME_ACTIONS_LAYOUT_POS, GAME_ACTIONS_LAYOUT_SIZE, \
+    GAME_ACTIONS_LAYOUT_SPACING, GAME_ACTIONS_LAYOUT_NAME
 
 
 class ProfilesMenuWindow(Window):
     def __init__(self, *args):
         super().__init__(*args)
 
-        self.radio_buttons = []
-        self.push_buttons = []
+        self.profiles_radio_buttons = []
+        self.game_actions_push_buttons = []
 
-        self.add_radio_buttons()
-        self.add_push_buttons()
+        self.layouts = []
+        self.add_layouts()
 
-    def add_radio_buttons(self) -> None:
-        widgets, name, = \
-            self.setup_radio_buttons(), PROFILES_LAYOUT_NAME
+    def add_layouts(self):
+        layouts_info = [
+            (self.setup_profiles_radio_buttons(), PROFILES_LAYOUT_NAME,
+             PROFILES_LAYOUT_SPACING, PROFILES_LAYOUT_POS,
+             PROFILES_LAYOUT_SIZE, HorizontalLayout),
 
-        spacing = self.convert_percent(PROFILES_LAYOUT_SPACING)
-        pos = self.convert_percent(PROFILES_LAYOUT_POS)
-        size = self.convert_percent(PROFILES_LAYOUT_SIZE)
+            (self.setup_game_actions_push_buttons(), GAME_ACTIONS_LAYOUT_NAME,
+             GAME_ACTIONS_LAYOUT_SPACING, GAME_ACTIONS_LAYOUT_POS,
+             GAME_ACTIONS_LAYOUT_SIZE, VerticalLayout)
+        ]
 
-        self.profiles_layout = \
-            HorizontalLayout(widgets, spacing, name, pos, size)
+        for layout_info in layouts_info:
+            widgets, name, spacing, pos, size, layout = layout_info
 
-    def add_push_buttons(self) -> None:
-        pass
+            spacing, pos, size = \
+                list(map(self.convert_percent, (spacing, pos, size)))
 
-    def setup_radio_buttons(self) -> list:
-        radio_buttons_group = RadioButtonGroup([])
+            self.get_layouts().append(
+                layout(widgets, spacing, name, pos, size))
+
+    def setup_profiles_radio_buttons(self) -> list:
+        self.profiles_radio_buttons_group = RadioButtonGroup([])
         radio_buttons = []
 
-        image = ImageHandler.load_image(PROFILE_IMAGE_PATH)
+        image = ImageHandler.load_image(PROFILE_RADIO_BUTTON_IMAGE_PATH)
 
         selection_line_width = \
             self.convert_percent(RADIO_BUTTON_SELECTION_LINE_WIDTH)
 
         for user_name in USER_NAMES:
             radio_buttons.append(RadioButton(
-                radio_buttons_group, selection_line_width, colors.RED,
+                self.get_profiles_radio_buttons_group(),
+                selection_line_width, colors.RED,
                 image, user_name, (0, 0), (0, 0)))
 
         radio_buttons[0].set_checked(True)
 
         return radio_buttons
 
-    def setup_push_buttons(self) -> list:
-        pass
+    def setup_game_actions_push_buttons(self) -> list:
+        push_buttons = []
 
-    def reset_progress(self, user_name: str) -> None:
-        pass
+        # ResetProgressPushButton
+        image = ImageHandler.load_image(RESET_PROGRESS_PUSH_BUTTON_PATH)
+        action_info = (self.reset_progress, (), {})
+        push_buttons.append(PushButton(
+            action_info, image, RESET_PROGRESS_PUSH_BUTTON_NAME,
+            (0, 0), (0, 0)))
 
-    def continue_game(self, user_name: str) -> None:
-        pass
+        # ContinueGamePushButton
+        image = ImageHandler.load_image(CONTINUE_GAME_PUSH_BUTTON_PATH)
+        action_info = (self.continue_game, (), {})
+        push_buttons.append(PushButton(
+            action_info, image, CONTINUE_GAME_PUSH_BUTTON_NAME,
+            (0, 0), (0, 0)))
 
-    def get_radio_buttons(self) -> list:
-        return self.radio_buttons
+        return push_buttons
 
-    def get_push_buttons(self) -> list:
-        return self.push_buttons
+    def reset_progress(self) -> None:
+        user_name = self.get_profiles_radio_buttons_group()\
+            .get_checked_button().get_name()
+        db_handler = self.get_parent().get_data_base_handler()
 
-    def get_profiles_layout(self) -> HorizontalLayout:
-        return self.profiles_layout
+        db_handler.update(
+            'user_progress', {'game_time': 0, 'stars_count': 0},
+            {'user_name': f'"{user_name}"'})
+
+        db_handler.get_connection().commit()
+
+        self.start_game(user_name)
+
+    def continue_game(self) -> None:
+        user_name = self.get_profiles_radio_buttons_group()\
+            .get_checked_button().get_name()
+
+        self.start_game(user_name)
+
+    def start_game(self, user_name):
+        self.flip_window(
+            self.get_parent().get_windows()[LEVELS_MENU_WINDOW_NAME]
+            (user_name, self.get_parent()))
+
+    def get_profiles_radio_buttons_group(self) -> RadioButtonGroup:
+        return self.profiles_radio_buttons_group
+
+    def get_layouts(self) -> list:
+        return self.layouts
 
     def update(self, event: pygame.event.Event):
-        for button in self.get_push_buttons():
-            button.update(event)
-
-        self.get_profiles_layout().update(event)
+        for layout in self.get_layouts():
+            layout.update(event)
 
     def render(self, screen: pygame.Surface):
-        self.get_profiles_layout().render(screen)
+        super().render(screen)
+
+        for layout in self.get_layouts():
+            layout.render(screen)

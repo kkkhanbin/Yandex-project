@@ -1,3 +1,6 @@
+import sys
+import sqlite3
+
 import pygame
 pygame.init()
 
@@ -6,9 +9,12 @@ from constants.main_settings import FPS, SIZE, BACKGROUND_COLOR, \
 from constants.windows.windows_names import START_WINDOW_NAME, \
     MAIN_MENU_WINDOW_NAME, LEVELS_MENU_WINDOW_NAME, PROFILES_MENU_WINDOW_NAME,\
     RESTART_WINDOW_NAME, SETTINGS_WINDOW_NAME, LEVEL_EDITOR_WINDOW_NAME
+from constants.data_base.data_base_settings import USER_NAMES, \
+    USER_DATABASE_PATH
+
+from handlers.DataBaseHandler.DataBaseHandler import DataBaseHandler
 
 from windows.Window import Window
-
 from windows.SettingsWindow.SettingsWindow import SettingsWindow
 from windows.MainMenuWindow.MainMenuWindow import MainMenuWindow
 from windows.StartWindow.StartWindow import StartWindow
@@ -32,7 +38,26 @@ class Game:
         self.current_windows = []
         self.add_start_windows(self.current_windows)
 
-        self.run()
+        self.setup_data_base()
+        self.normalize_data_base()
+
+    def setup_data_base(self):
+        self.data_base_handler = DataBaseHandler(
+            sqlite3.connect(USER_DATABASE_PATH))
+
+    def normalize_data_base(self):
+        data = self.get_data_base_handler().select(
+            'user_progress', ('*',), {}).fetchall()
+
+        if len(data) < len(USER_NAMES):
+            for user_name in USER_NAMES:
+                if user_name not in list(map(lambda row: row[0], data)):
+                    self.get_data_base_handler().insert(
+                        'user_progress',
+                        ('user_name', 'game_time', 'stars_count'),
+                        (f"'{user_name}'", 0, 0))
+
+        self.get_data_base_handler().get_connection().commit()
 
     def run(self):
         while self.get_running():
@@ -41,7 +66,7 @@ class Game:
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    self.set_running(False)
+                    self.quit()
 
                 self.update_current_windows(event)
 
@@ -62,6 +87,9 @@ class Game:
 
     def get_screen(self) -> pygame.Surface:
         return self.screen
+
+    def get_data_base_handler(self) -> DataBaseHandler:
+        return self.data_base_handler
 
     def get_background_color(self) -> pygame.Color:
         return self.background_color
@@ -106,5 +134,16 @@ class Game:
     def get_windows(self) -> dict:
         return self.windows
 
+    def quit(self):
+        self.set_running(False)
+        self.get_data_base_handler().get_connection().close()
+        pygame.quit()
+        sys.exit()
 
-Game()
+
+def start_game():
+    game = Game()
+    game.run()
+
+
+start_game()

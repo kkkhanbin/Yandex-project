@@ -6,5 +6,3 @@ SIZE = WIDTH, HEIGHT = 900, 500
 BACKGROUND_COLOR = BLACK
 START_WINDOWS_NAMES = [START_WINDOW_NAME]
 TITLE = 'Square Jumper'
-USER_DATABASE_PATH = 'user.sqlite'
-USER_NAMES = ['Пользователь 1', 'Пользователь 2', 'Пользователь 3']
