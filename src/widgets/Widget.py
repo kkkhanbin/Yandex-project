@@ -14,7 +14,8 @@ class Widget:
     def render(self, screen: pygame.Surface):
         pass
 
-    def update(self):
+    @abstractmethod
+    def update(self, *args):
         pass
 
     def get_name(self) -> str:

@@ -37,6 +37,7 @@ class ProfilesMenuWindow(Window):
         self.add_layouts()
 
     def add_layouts(self):
+        """Добавляем лэйауты окна"""
         layouts_info = [
             (self.setup_profiles_radio_buttons(), PROFILES_LAYOUT_NAME,
              PROFILES_LAYOUT_SPACING, PROFILES_LAYOUT_POS,
@@ -54,9 +55,10 @@ class ProfilesMenuWindow(Window):
                 list(map(self.convert_percent, (spacing, pos, size)))
 
             self.get_layouts().append(
-                layout(widgets, spacing, name, pos, size))
+                layout(widgets, spacing, False, name, pos, size))
 
     def setup_profiles_radio_buttons(self) -> list:
+        """Настраиваем радио-кнопки профилей"""
         self.profiles_radio_buttons_group = RadioButtonGroup([])
         radio_buttons = []
 
@@ -69,32 +71,34 @@ class ProfilesMenuWindow(Window):
             radio_buttons.append(RadioButton(
                 self.get_profiles_radio_buttons_group(),
                 selection_line_width, colors.RED,
-                image, user_name, (0, 0), (0, 0)))
+                image, True, user_name, (0, 0), (0, 0)))
 
         radio_buttons[0].set_checked(True)
 
         return radio_buttons
 
     def setup_game_actions_push_buttons(self) -> list:
+        """Настраиваем кнопки взаимодействия с игрой"""
         push_buttons = []
 
         # ResetProgressPushButton
         image = ImageHandler.load_image(RESET_PROGRESS_PUSH_BUTTON_PATH)
         action_info = (self.reset_progress, (), {})
         push_buttons.append(PushButton(
-            action_info, image, RESET_PROGRESS_PUSH_BUTTON_NAME,
+            action_info, image, True, RESET_PROGRESS_PUSH_BUTTON_NAME,
             (0, 0), (0, 0)))
 
         # ContinueGamePushButton
         image = ImageHandler.load_image(CONTINUE_GAME_PUSH_BUTTON_PATH)
         action_info = (self.continue_game, (), {})
         push_buttons.append(PushButton(
-            action_info, image, CONTINUE_GAME_PUSH_BUTTON_NAME,
+            action_info, image, True, CONTINUE_GAME_PUSH_BUTTON_NAME,
             (0, 0), (0, 0)))
 
         return push_buttons
 
     def reset_progress(self) -> None:
+        """Обнуление данных профиля в БД"""
         user_name = self.get_profiles_radio_buttons_group()\
             .get_checked_button().get_name()
         db_handler = self.get_parent().get_data_base_handler()
@@ -110,7 +114,6 @@ class ProfilesMenuWindow(Window):
     def continue_game(self) -> None:
         user_name = self.get_profiles_radio_buttons_group()\
             .get_checked_button().get_name()
-
         self.start_game(user_name)
 
     def start_game(self, user_name):
