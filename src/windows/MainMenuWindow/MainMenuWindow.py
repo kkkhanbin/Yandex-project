@@ -38,8 +38,8 @@ class MainMenuWindow(Window):
             image = pygame.transform.scale(
                 ImageHandler.load_image(image_path, colorkey), size)
 
-            # action_info, image, name, pos, size
-            button = PushButton(action, image, name, pos, size)
+            # action_info, image, enabled, name, pos, size
+            button = PushButton(action, image, True, name, pos, size)
             self.get_push_buttons().append(button)
 
     def setup_push_buttons(self) -> list:

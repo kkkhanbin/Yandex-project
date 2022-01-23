@@ -29,8 +29,8 @@ class Window:
     def get_pos(self) -> tuple:
         return self.pos
 
-    # Конвертирует процентное значение координат в обычное
     def convert_percent(self, value):
+        """Конвертирует процентное значение координат в обычное"""
         screen_w, screen_h = self.get_screen().get_size()
 
         if type(value) == float or type(value) == int:
