@@ -4,6 +4,7 @@ from windows.Window import Window
 
 from handlers.TextHandler.TextHandler import TextHandler
 from handlers.ImageHandler.ImageHandler import ImageHandler
+from handlers.ConvertHandler.ConvertHandler import ConvertHandler
 
 from widgets.Buttons.PushButton.PushButton import PushButton
 
@@ -34,7 +35,7 @@ class MainMenuWindow(Window):
         for buttons_arg in buttons_args:
             action, name, pos, image_path, size, colorkey = buttons_arg
 
-            pos = self.convert_percent(pos)
+            pos = ConvertHandler.convert_percent(self.get_screen_size(), pos)
             image = pygame.transform.scale(
                 ImageHandler.load_image(image_path, colorkey), size)
 
@@ -43,7 +44,8 @@ class MainMenuWindow(Window):
             self.get_push_buttons().append(button)
 
     def setup_push_buttons(self) -> list:
-        default_button_size = self.convert_percent(DEFAULT_BUTTON_SIZE)
+        default_button_size = ConvertHandler.convert_percent(
+            self.get_screen_size(), DEFAULT_BUTTON_SIZE)
 
         buttons = [
             ((self.flip_window,
@@ -72,8 +74,9 @@ class MainMenuWindow(Window):
     def add_text(self):
         # Добавляем название программы на экран
         title = self.get_parent().get_title()
-        title_pos = self.convert_percent(TITLE_POS)
-        title_size = round(self.convert_percent(TITLE_FONT_SIZE))
+        title_pos = ConvertHandler.convert_percent(
+            self.get_screen_size(), TITLE_POS)
+        title_size = TITLE_FONT_SIZE
         title_font = pygame.font.Font(None, title_size)
 
         TextHandler.draw_text(self.get_screen(), title, title_pos,

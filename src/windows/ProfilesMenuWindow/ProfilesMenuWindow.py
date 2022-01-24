@@ -2,8 +2,8 @@ import pygame
 
 from windows.Window import Window
 
-from handlers.DataBaseHandler.DataBaseHandler import DataBaseHandler
 from handlers.ImageHandler.ImageHandler import ImageHandler
+from handlers.ConvertHandler.ConvertHandler import ConvertHandler
 
 from widgets.Layouts.HorizontalLayout.HorizontalLayout import HorizontalLayout
 from widgets.Layouts.VerticalLayout.VerticalLayout import VerticalLayout
@@ -51,8 +51,8 @@ class ProfilesMenuWindow(Window):
         for layout_info in layouts_info:
             widgets, name, spacing, pos, size, layout = layout_info
 
-            spacing, pos, size = \
-                list(map(self.convert_percent, (spacing, pos, size)))
+            pos, size = ConvertHandler.convert_percent(
+                self.get_screen_size(), pos, size)
 
             self.get_layouts().append(
                 layout(widgets, spacing, False, name, pos, size))
@@ -64,8 +64,7 @@ class ProfilesMenuWindow(Window):
 
         image = ImageHandler.load_image(PROFILE_RADIO_BUTTON_IMAGE_PATH)
 
-        selection_line_width = \
-            self.convert_percent(RADIO_BUTTON_SELECTION_LINE_WIDTH)
+        selection_line_width = RADIO_BUTTON_SELECTION_LINE_WIDTH
 
         for user_name in USER_NAMES:
             radio_buttons.append(RadioButton(
