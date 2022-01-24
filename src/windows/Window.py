@@ -26,16 +26,8 @@ class Window:
     def get_screen(self) -> pygame.Surface:
         return self.screen
 
+    def get_screen_size(self) -> tuple:
+        return self.get_screen().get_size()
+
     def get_pos(self) -> tuple:
         return self.pos
-
-    def convert_percent(self, value):
-        """Конвертирует процентное значение координат в обычное"""
-        screen_w, screen_h = self.get_screen().get_size()
-
-        if type(value) == float or type(value) == int:
-            return round(max(screen_w, screen_h) * value)
-        elif type(value) == tuple:
-            return (round(value[0] * screen_w), round(value[1] * screen_h))
-        elif type(value) == list:
-            return [round(value[0] * screen_w), round(value[1] * screen_h)]

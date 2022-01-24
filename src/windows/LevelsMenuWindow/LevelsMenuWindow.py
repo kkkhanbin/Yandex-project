@@ -19,6 +19,7 @@ from widgets.Buttons.PushButton.PushButton import PushButton
 
 from handlers.TextHandler.TextHandler import TextHandler
 from handlers.ImageHandler.ImageHandler import ImageHandler
+from handlers.ConvertHandler.ConvertHandler import ConvertHandler
 
 
 class LevelsMenuWindow(Window):
@@ -32,11 +33,12 @@ class LevelsMenuWindow(Window):
     def add_levels_layout(self):
         """Добавление лэйаута с уровнями"""
         level_icons = self.setup_level_push_buttons()
+        pos, size = ConvertHandler.convert_percent(
+            self.get_screen_size(), LEVELS_LAYOUT_POS,
+            LEVELS_LAYOUT_SIZE)
 
-        self.levels_layout = HorizontalLayout([], self.convert_percent(
-            LEVELS_LAYOUT_SPACING), True, LEVELS_LAYOUT_NAME,
-            self.convert_percent(LEVELS_LAYOUT_POS),
-            self.convert_percent(LEVELS_LAYOUT_SIZE))
+        self.levels_layout = HorizontalLayout(
+            [], LEVELS_LAYOUT_SPACING, True, LEVELS_LAYOUT_NAME, pos, size)
 
         for level_icon in level_icons:
             self.get_levels_layout().add_widget(level_icon)
@@ -52,7 +54,7 @@ class LevelsMenuWindow(Window):
             action_info = self.flip_window, (self.get_parent().get_windows()
                 [LEVEL_WINDOW_NAME](level_name, self.get_parent()),), {}
             image = self.get_level_icon(level_info)
-            min_size = self.convert_percent(LEVEL_ICON_MIN_SIZE)
+            min_size = LEVEL_ICON_MIN_SIZE
             enabled = level_info[OPENED_PAR_NAME]
 
             level_push_button = \
@@ -84,8 +86,7 @@ class LevelsMenuWindow(Window):
         opened = level_info[OPENED_PAR_NAME]
         icon_color = OPENED_ICON_COLOR \
             if opened else CLOSED_ICON_COLOR
-        font = pygame.font.Font(
-            None, self.convert_percent(LEVELS_LAYOUT_FONT_SIZE))
+        font = pygame.font.Font(None, LEVELS_LAYOUT_FONT_SIZE)
 
         pygame.draw.rect(temp_screen, icon_color,
                          pygame.Rect(0, 0, *size))
