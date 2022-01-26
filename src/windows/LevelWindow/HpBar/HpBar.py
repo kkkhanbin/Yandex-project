@@ -3,6 +3,8 @@ import pygame
 from constants.windows.level_window.hp_bar.hp_bar_settings import \
     BORDER_COLOR, BORDER_WIDTH, FILL_COLOR
 
+from Sprites.Hero.Hero import Hero
+
 
 # Класс для отображения очков здоровья привязанного игрока
 class HpBar:
@@ -18,15 +20,17 @@ class HpBar:
         self.fill_color = FILL_COLOR
 
     def render(self, screen: pygame.Surface):
-        min_hp, hp, max_hp = self.get_target().get_hp_info()
         rect = self.get_rect()
 
-        # Кол-во ОЗ
-        hp_amount = max_hp - min_hp
-        fill_coeff = hp / hp_amount
+        if isinstance(self.get_target(), Hero):
+            min_hp, hp, max_hp = self.get_target().get_hp_info()
 
-        pygame.draw.rect(screen, self.get_fill_color(), pygame.Rect(
-            rect.x, rect.y, rect.width * fill_coeff, rect.height))
+            # Кол-во ОЗ
+            hp_amount = max_hp - min_hp
+            fill_coeff = hp / hp_amount
+
+            pygame.draw.rect(screen, self.get_fill_color(), pygame.Rect(
+                rect.x, rect.y, rect.width * fill_coeff, rect.height))
 
         # Рамка
         pygame.draw.rect(screen, self.get_border_color(), rect,
