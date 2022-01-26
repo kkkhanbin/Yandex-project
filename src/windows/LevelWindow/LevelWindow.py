@@ -1,10 +1,7 @@
-import os
-
 import pygame
 
 from handlers.ConvertHandler.ConvertHandler import ConvertHandler
 
-from constants.paths import LEVELS_PATH
 from constants.windows.level_window.level_window_settings import MAP_POS, \
     MAP_SIZE, HP_BAR_POS, HP_BAR_SIZE
 
@@ -15,7 +12,6 @@ from windows.LevelWindow.HpBar.HpBar import HpBar
 
 class LevelWindow(Window):
     def __init__(self, level_path: str, *args):
-        print(level_path)
         super(LevelWindow, self).__init__(*args)
 
         self.level_path = level_path
@@ -24,7 +20,8 @@ class LevelWindow(Window):
         self.add_hp_bar()
 
     def add_map(self):
-        self.map = Map(self.get_level_path(), *ConvertHandler.convert_percent(
+        self.map = Map(
+            self, self.get_level_path(), *ConvertHandler.convert_percent(
             self.get_screen_size(), MAP_SIZE, MAP_POS))
 
     def add_hp_bar(self):
@@ -32,6 +29,9 @@ class LevelWindow(Window):
             *ConvertHandler.convert_percent(
                 self.get_screen_size(), HP_BAR_SIZE, HP_BAR_POS),
             self.get_map().get_hero())
+
+    def tick(self):
+        self.get_map().tick()
 
     def render(self, screen: pygame.Surface):
         super().render(screen)

@@ -79,6 +79,8 @@ class Game:
 
                 self.update_current_windows(event)
 
+            self.tick_current_windows()
+
             # Рендер окон
             self.render_current_windows(self.get_screen())
 
@@ -115,6 +117,10 @@ class Game:
 
     def get_title(self) -> str:
         return self.title
+
+    def tick_current_windows(self):
+        for current_window in self.get_current_windows():
+            current_window.tick()
 
     def update_current_windows(self, *args):
         for current_window in self.get_current_windows():

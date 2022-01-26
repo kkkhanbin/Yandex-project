@@ -16,6 +16,9 @@ class Window:
     def update(self, *args):
         pass
 
+    def tick(self):
+        pass
+
     def flip_window(self, window):
         self.get_parent().delete_current_window(self)
         self.get_parent().add_current_window(window)

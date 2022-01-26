@@ -1,4 +1,4 @@
-from Sprites.Hero import Hero
+from Sprites.Hero.Hero import Hero
 from Sprites.Cannon.Cannon import Cannon
 from Sprites.Door.Door import Door
 from Sprites.Ladder.Ladder import Ladder
