@@ -25,3 +25,9 @@ class Sprite(pygame.sprite.Sprite):
 
     def tick(self):
         pass
+
+    def set_rect(self, rect: pygame.Rect):
+        self.rect = rect
+
+    def get_rect(self) -> pygame.Rect:
+        return self.rect

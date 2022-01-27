@@ -81,6 +81,7 @@ class Map:
         self.get_all_sprites_group().update(event)
 
     def tick(self):
+        """Вызывается при каждом тике игрового цикла"""
         for sprite in self.get_all_sprites_group().sprites():
             sprite.tick()
 
