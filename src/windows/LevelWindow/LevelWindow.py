@@ -30,8 +30,8 @@ class LevelWindow(Window):
                 self.get_screen_size(), HP_BAR_SIZE, HP_BAR_POS),
             self.get_map().get_hero())
 
-    def tick(self):
-        self.get_map().tick()
+    def tick(self, fps: int):
+        self.get_map().tick(fps)
 
     def render(self, screen: pygame.Surface):
         super().render(screen)

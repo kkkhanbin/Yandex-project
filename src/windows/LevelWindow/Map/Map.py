@@ -32,11 +32,6 @@ class Map:
         self.borders_color = BORDERS_COLOR
         self.borders_width = BORDERS_WIDTH
 
-        self.setup_g()
-
-    def setup_g(self):
-        self.g = G / self.get_parent().get_parent().get_fps()
-
     def load_map(self):
         """Загрузка карты - распределение спрайтов по группам"""
         self.setup_sprite_groups()
@@ -80,10 +75,10 @@ class Map:
     def update(self, event: pygame.event.Event):
         self.get_all_sprites_group().update(event)
 
-    def tick(self):
+    def tick(self, fps: int):
         """Вызывается при каждом тике игрового цикла"""
         for sprite in self.get_all_sprites_group().sprites():
-            sprite.tick()
+            sprite.tick(fps)
 
     def get_map_path(self) -> str:
         return self.map_path
@@ -118,9 +113,6 @@ class Map:
 
     def get_parent(self):
         return self.parent
-
-    def get_g(self) -> float:
-        return self.g
 
     def get_screen(self) -> pygame.Surface:
         return self.screen

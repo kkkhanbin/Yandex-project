@@ -16,7 +16,7 @@ class Window:
     def update(self, *args):
         pass
 
-    def tick(self):
+    def tick(self, fps: int):
         pass
 
     def flip_window(self, window):
