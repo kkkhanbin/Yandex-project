@@ -1,8 +1,9 @@
 from Sprites.Wall.Wall import Wall
+from Sprites.Cannon.Cannon import Cannon
 
-IMAGE_PATH = 'data/images/level/hero.png'
+from Sprites.Cannon.Bullet.Bullet import Bullet
+
+IMAGE_PATH = 'data/images/sprites/hero/hero.png'
 STEP = 200  # Пикселей в секунду
-MAX_JUMP_COUNT = 2
-JUMP_HEIGHT = 0.02  # Начальная инерция при прыжке
-OBSTACLES = [Wall]
-HIT_BOX_PADDING = 20
+OBSTACLES = [Wall, Cannon, Bullet]
+ENEMIES = [Bullet]

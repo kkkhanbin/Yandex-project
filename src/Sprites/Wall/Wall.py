@@ -1,18 +1,15 @@
-import pygame
-
 from Sprites.Sprite import Sprite
 
+from constants.sprites.sprites_settings import ANGLES, DIRECTIONS
 from constants.sprites.wall.wall_settings import IMAGE_PATH
-
-from handlers.ImageHandler.ImageHandler import ImageHandler
 
 
 class Wall(Sprite):
     def __init__(self, *groups):
         super().__init__(*groups)
 
-        self.image = pygame.transform.scale(
-            ImageHandler.load_image(IMAGE_PATH), self.get_rect().size)
+        self.image = self.load_image(IMAGE_PATH)
 
-    def get_image(self) -> pygame.Surface:
-        return self.image
+        direction = ANGLES[self.get_direction()]
+        self.set_direction((direction * 2) % 360)
+        self.direction = DIRECTIONS[direction]
