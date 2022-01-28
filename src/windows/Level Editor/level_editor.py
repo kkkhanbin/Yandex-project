@@ -1,174 +1,237 @@
 import pygame
+import csv
 import button
+from constants.main_settings import FPS, SIZE
+from constants.level_editor.level_editor_settings import TITLE, LOWER_MARGIN, SIDE_MARGIN, ROWS, MAX_COLS, TILE_TYPES, TILE_SIZE, RED, GREEN, BLUE, WHITE
+from constants.level_editor.level_editor_settings import SCREEN_WIDTH, SCREEN_HEIGHT
+from windows.Window import Window
 
 pygame.init()
-
-clock = pygame.time.Clock()
-FPS = 60
-
-# параметры экрана
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 640
-LOWER_MARGIN = 100
-SIDE_MARGIN = 300
 
 screen = pygame.display.set_mode((SCREEN_WIDTH + SIDE_MARGIN, SCREEN_HEIGHT + LOWER_MARGIN))
 pygame.display.set_caption("Редактор")
 
 
-# параметры
-level = 0
-current_tile = 0
-scroll_left = False
-scroll_right = False
-scroll = 0
-scroll_speed = 1
-ROWS = 16
-MAX_COLS = 150
-TILE_SIZE = SCREEN_HEIGHT // ROWS
-TILE_TYPES = 12
+class Editor(Window):
+	def __init__(self) -> None:
+		self.fps = FPS
+		self.screen = pygame.display.set_mode(SIZE)
+		self.running = True
+
+		self.screen = pygame.display.set_mode(SIZE)
+		self.clock = pygame.time.Clock()
+		self.red = RED
+		self.green = GREEN
+		self.blue = BLUE
+		self.white = WHITE
+		self.title = TITLE
+		
+		self.rows = ROWS
+		self.max_cols = MAX_COLS
+		self.tile_size = TILE_SIZE
+		self.tile_type = TILE_TYPES
+
+		self.level = 0
+		self.current_tile = 0
+		self.scroll_left = False
+		self.scroll_right = False
+		self.scroll = 0
+		self.scroll_speed = 1
+
+		# загрузка заднего фона
+		self.background1_img = pygame.image.load("img/Background/background1.png").convert_alpha() 
+		self.background2_img = pygame.image.load("img/Background/background2.png").convert_alpha()
+		self.background3_img = pygame.image.load("img/Background/background3.png").convert_alpha()
+
+		# загрузка кнопок сохранения и загрузки уровня
+		save_img = pygame.image.load("images/save_button.png").convert_alpha()
+		load_img = pygame.image.load("images/load_button.png").convert_alpha()
+
+		# хранение плиток в списке
+		self.images_list = []
+		for x in range(TILE_TYPES):
+			img = pygame.image.load(f"img/tile/{x}.png").convert_alpha()
+			img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE))
+			self.images_list.append(img)
 
 
-# загрузка заднего фона
-background1_img = pygame.image.load("img/Background/background1.png").convert_alpha() 
-background2_img = pygame.image.load("img/Background/background2.png").convert_alpha()
-background3_img = pygame.image.load("img/Background/background3.png").convert_alpha()
+		self.font = pygame.font.SysFont("Futura", 30)
 
-# хранение плиток в списке
-images_list = []
-for x in range(TILE_TYPES):
-	img = pygame.image.load(f"img/tile/{x}.png").convert_alpha()
-	img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE))
-	images_list.append(img)
+		# список объектов
+		self.world_data = []
+		for row in range(ROWS):
+			r = [-1] * MAX_COLS
+			self.world_data.append(r)
 
-
-GREEN = (81, 197, 0)
-WHITE = (255, 255, 255)
-RED = (200, 25, 25)
-BLUE = (51, 133, 255)
-
-font = pygame.font.SysFont("Futura", 30)
-
-# список объектов
-world_data = []
-for row in range(ROWS):
-	r = [-1] * MAX_COLS
-	world_data.append(r)
-
-# генерация поверхности
-for i in range(0, MAX_COLS):
-	world_data[ROWS - 1][i] = 0
+		# генерация поверхности
+		for i in range(0, MAX_COLS):
+			self.world_data[ROWS - 1][i] = 0
 
 
-# функция для вывода текста на экран
-def draw_text(text, font, text_col, x, y):
-	img = font.render(text, True, text_col)
-	screen.blit(img, (x, y))
+		self.self.save_button = button.Button(SCREEN_WIDTH // 2 + 150, SCREEN_HEIGHT + LOWER_MARGIN - 75, save_img, 1)
+		self.load_button = button.Button(SCREEN_WIDTH // 2 + 300, SCREEN_HEIGHT + LOWER_MARGIN - 75, load_img, 1)
 
-
-# функция для рисования заднего фона
-def draw_background():
-	screen.fill(BLUE)
-	width = background3_img.get_width()
-	for i in range(3):
-		screen.blit(background3_img, ((i * width) - scroll * 0.5, 0))
-		screen.blit(background1_img, ((i * width) - scroll * 0.7, SCREEN_HEIGHT - background1_img.get_height() - 150))
-		screen.blit(background2_img, ((i * width) - scroll * 0.8, SCREEN_HEIGHT - background2_img.get_height()))
-
-# функция для рисовки клеток
-def draw_grid():
-	# вертикальные линии
-	for i in range(MAX_COLS + 1):
-		pygame.draw.line(screen, WHITE, (i * TILE_SIZE - scroll, 0), (i * TILE_SIZE - scroll, SCREEN_HEIGHT))
-	# горизонтальные линии
-	for i in range(ROWS + 1):
-		pygame.draw.line(screen, WHITE, (0, i * TILE_SIZE), (SCREEN_WIDTH, i * TILE_SIZE))
-
-
-# функция для рисования объектов мира
-def draw_world():
-	for i, row in enumerate(world_data):
-		for j, tile in enumerate(row):
-			if tile >= 0:
-				screen.blit(images_list[tile], (j * TILE_SIZE - scroll, i * TILE_SIZE))
-
-
-# список кнопок
-button_list = []
-button_col = 0
-button_row = 0
-
-for i in range(len(images_list)):
-	tile_button = button.Button(SCREEN_WIDTH + (75 * button_col) + 50, 75 * button_row + 50, images_list[i], 1)
-	button_list.append(tile_button)
-	button_col += 1
-	if button_col == 3:
-		button_row += 1
+		# список кнопок
+		button_list = []
 		button_col = 0
+		button_row = 0
 
-run = True
-while run:
-	clock.tick(FPS)
-	draw_background()
-	draw_grid()
-	draw_world()
-	draw_text(f"Уровень: {level}", font, WHITE, 10, SCREEN_HEIGHT + LOWER_MARGIN - 90)
-	draw_text("Нажмите вверх или вниз, чтобы изменить уровень", font, WHITE, 10, SCREEN_HEIGHT + LOWER_MARGIN - 60)
+		for i in range(len(self.images_list)):
+			tile_button = button.Button(SCREEN_WIDTH + (75 * button_col) + 50, 75 * button_row + 50, self.images_list[i], 1)
+			button_list.append(tile_button)
+			button_col += 1
+			if button_col == 3:
+				button_row += 1
+				button_col = 0
 
-	pygame.draw.rect(screen, GREEN, (SCREEN_WIDTH, 0, SIDE_MARGIN, SCREEN_HEIGHT))
+	def get_screen_size(self) -> tuple:
+		return self.get_screen().get_size()
 
-	button_count = 0
-	for button_count, i in enumerate(button_list):
-		if i.draw(screen):
-			current_tile = button_count
+	def get_screen(self) -> pygame.Surface:
+		return self.screen
 
-	pygame.draw.rect(screen, RED, button_list[current_tile].rect, 3)
+	def get_title(self) -> str:
+		return self.title
 
-	# прокрутка карты
-	if scroll_left == True and scroll > 0:
-		scroll -= 5 * scroll_speed
-	if scroll_right == True and scroll < (MAX_COLS * TILE_SIZE) - SCREEN_WIDTH:
-		scroll += 5 * scroll_speed
+	def set_running(self, running: bool):
+		self.running = running
+		return self
 
-    # координаты курсора
-	pos = pygame.mouse.get_pos()
-	x = (pos[0] + scroll) // TILE_SIZE
-	y = pos[1] // TILE_SIZE
+	def get_running(self) -> bool:
+		return self.running
 
-	# проверка координат которые находятся в пределах области объекта
-	if pos[0] < SCREEN_WIDTH and pos[1] < SCREEN_HEIGHT:
-		# обновляем значение объекта
-		if pygame.mouse.get_pressed()[0] == 1:
-			if world_data[y][x] != current_tile:
-				world_data[y][x] = current_tile
-		if pygame.mouse.get_pressed()[2] == 1:
-			world_data[y][x] = -1
+	def tick_current_windows(self, fps):
+		for current_window in self.get_current_windows():
+			current_window.tick(fps)
 
-	for event in pygame.event.get():
-		if event.type == pygame.QUIT:
-			run = False
+	def render_current_windows(self, screen: pygame.Surface):
+		for current_window in self.get_current_windows():
+			current_window.render(screen)
 
-		if event.type == pygame.KEYDOWN:
-			if event.key == pygame.K_UP:
-				level += 1
-			if event.key == pygame.K_DOWN and level > 0:
-				level -= 1
-			if event.key == pygame.K_LEFT:
-				scroll_left = True
-			if event.key == pygame.K_RIGHT:
-				scroll_right = True
-			if event.key == pygame.K_RSHIFT:
-				scroll_speed = 5
+	def get_clock(self) -> pygame.time.Clock:
+		return self.clock
 
-		if event.type == pygame.KEYUP:
-			if event.key == pygame.K_LEFT:
-				scroll_left = False
-			if event.key == pygame.K_RIGHT:
-				scroll_right = False
-			if event.key == pygame.K_RSHIFT:
-				scroll_speed = 1
+	def get_fps(self) -> float:
+		return self.fps
+
+	# функция для вывода текста на экран
+	def draw_text(self, text, font, text_col, x, y):
+		img = font.render(text, True, text_col)
+		screen.blit(img, (x, y))
 
 
-	pygame.display.update()
+	# функция для рисования заднего фона
+	def draw_background(self):
+		screen.fill(BLUE)
+		width = self.background3_img.get_width()
+		for i in range(3):
+			screen.blit(self.background3_img, ((i * width) - self.scroll * 0.5, 0))
+			screen.blit(self.background1_img, ((i * width) - self.scroll * 0.7, SCREEN_HEIGHT - self.background1_img.get_height() - 150))
+			screen.blit(self.background2_img, ((i * width) - self.scroll * 0.8, SCREEN_HEIGHT - self.background2_img.get_height()))
 
-pygame.quit()
+	# функция для рисовки клеток
+	def draw_grid(self):
+		# вертикальные линии
+		for i in range(MAX_COLS + 1):
+			pygame.draw.line(screen, WHITE, (i * TILE_SIZE - self.scroll, 0), (i * TILE_SIZE - self.scroll, SCREEN_HEIGHT))
+		# горизонтальные линии
+		for i in range(ROWS + 1):
+			pygame.draw.line(screen, WHITE, (0, i * TILE_SIZE), (SCREEN_WIDTH, i * TILE_SIZE))
+
+
+	# функция для рисования объектов мира
+	def draw_world(self):
+		for i, row in enumerate(self.world_data):
+			for j, tile in enumerate(row):
+				if tile >= 0:
+					screen.blit(self.images_list[tile], (j * TILE_SIZE - self.scroll, i * TILE_SIZE))
+
+	def run(self):
+		while self.get_running():
+			self.get_clock().tick(round(self.get_fps()))
+			pygame.display.set_caption(self.get_title())
+			self.draw_background()
+			self.draw_grid()
+			self.draw_world()
+			self.draw_text(f"Уровень: {self.level}", self.font, WHITE, 10, SCREEN_HEIGHT + LOWER_MARGIN - 90)
+			self.draw_text("Нажмите вверх или вниз, чтобы изменить уровень", self.font, WHITE, 10, SCREEN_HEIGHT + LOWER_MARGIN - 60)
+
+			# сохранение и загрузка данных
+			if self.save_button.draw(screen):
+				# сохранение данных об уровне
+				with open(f"level{self.level}_data.csv", "w", newline="") as csvfile:
+					writer = csv.writer(csvfile, delimiter = ",")
+					for row in self.world_data:
+						writer.writerow(row)
+		    # загрузка данных об уровне
+			if self.load_button.draw(screen):
+				self.scroll = 0
+				with open(f"level{self.level}_data.csv", newline="") as csvfile:
+					reader = csv.reader(csvfile, delimiter = ",")
+					for x, row in enumerate(reader):
+						for y, tile in enumerate(row):
+							self.world_data[x][y] = int(tile)
+
+
+			pygame.draw.rect(screen, GREEN, (SCREEN_WIDTH, 0, SIDE_MARGIN, SCREEN_HEIGHT))
+
+			button_count = 0
+			for button_count, i in enumerate(self.button_list):
+				if i.draw(screen):
+					current_tile = button_count
+
+			pygame.draw.rect(screen, RED, self.button_list[current_tile].rect, 3)
+
+			# прокрутка карты
+			if self.scroll_left == True and self.scroll > 0:
+				self.scroll -= 5 * self.scroll_speed
+			if self.scroll_right == True and self.scroll < (MAX_COLS * TILE_SIZE) - SCREEN_WIDTH:
+				self.scroll += 5 * self.scroll_speed
+
+		    # координаты курсора
+			pos = pygame.mouse.get_pos()
+			x = (pos[0] + self.scroll) // TILE_SIZE
+			y = pos[1] // TILE_SIZE
+
+			# проверка координат которые находятся в пределах области объекта
+			if pos[0] < SCREEN_WIDTH and pos[1] < SCREEN_HEIGHT:
+				# обновляем значение объекта
+				if pygame.mouse.get_pressed()[0] == 1:
+					if self.world_data[y][x] != current_tile:
+						self.world_data[y][x] = current_tile
+				if pygame.mouse.get_pressed()[2] == 1:
+					self.world_data[y][x] = -1
+
+			for event in pygame.event.get():
+				if event.type == pygame.QUIT:
+					pygame.quit()
+
+				if event.type == pygame.KEYDOWN:
+					if event.key == pygame.K_UP:
+						self.level += 1
+					if event.key == pygame.K_DOWN and self.level > 0:
+						self.level -= 1
+					if event.key == pygame.K_LEFT:
+						self.scroll_left = True
+					if event.key == pygame.K_RIGHT:
+						self.scroll_right = True
+					if event.key == pygame.K_RSHIFT:
+						self.scroll_speed = 5
+
+				if event.type == pygame.KEYUP:
+					if event.key == pygame.K_LEFT:
+						self.scroll_left = False
+					if event.key == pygame.K_RIGHT:
+						self.scroll_right = False
+					if event.key == pygame.K_RSHIFT:
+						self.scroll_speed = 1
+
+			pygame.display.flip()
+			pygame.display.update()
+
+
+def open_editor():
+    editor = Editor()
+    editor.run()
+
+open_editor()
