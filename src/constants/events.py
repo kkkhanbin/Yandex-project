@@ -1,0 +1,4 @@
+import pygame
+
+GAME_COMPLETED_EVENT = pygame.USEREVENT + 1
+GAME_OVER_EVENT = pygame.USEREVENT + 2

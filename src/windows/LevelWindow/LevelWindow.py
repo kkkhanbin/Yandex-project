@@ -4,6 +4,7 @@ from handlers.ConvertHandler.ConvertHandler import ConvertHandler
 
 from constants.windows.level_window.level_window_settings import MAP_POS, \
     MAP_SIZE, HP_BAR_POS, HP_BAR_SIZE
+from constants import events
 
 from windows.Window import Window
 from windows.LevelWindow.Map.Map import Map
@@ -41,6 +42,18 @@ class LevelWindow(Window):
 
     def update(self, event: pygame.event.Event):
         self.get_map().update(event)
+
+        if event.type == events.GAME_OVER_EVENT:
+            self.game_over()
+        elif event.type == events.GAME_COMPLETED_EVENT:
+            self.game_completed()
+
+    def game_over(self):
+        # TODO заглушка
+        print('ТЫ УМЕР!!!')
+
+    def game_completed(self):
+        pass
 
     def get_map(self) -> Map:
         return self.map

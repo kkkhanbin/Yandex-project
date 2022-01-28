@@ -1,1 +1,1 @@
-IMAGE_PATH = 'data/images/level/wall.jpg'
+IMAGE_PATH = 'data/images/sprites/wall/wall.jpg'

@@ -4,17 +4,11 @@ import pygame
 
 from constants.level.level_settings import PAR_SEPARATOR, TUPLE_SEPARATOR
 from constants.paths import LEVELS_PATH, PARAMETERS_PATH, MAP_PATH
-from constants.sprites.sprite_settings import SPRITES_NAMES
+from constants.sprites.sprites import SPRITES
+from constants.sprites.sprites_settings import HERO_SPRITE_NAME
 from constants.windows.level_window.map.map_settings import BORDERS_COLOR, \
     BORDERS_WIDTH, G
 from constants.gui.colors import BLACK
-
-from Sprites.Hero.Hero import Hero
-from Sprites.Cannon.Cannon import Cannon
-from Sprites.Door.Door import Door
-from Sprites.Ladder.Ladder import Ladder
-from Sprites.Saws.Saws import Saws
-from Sprites.Wall.Wall import Wall
 
 
 class Map:
@@ -42,7 +36,7 @@ class Map:
         # Проход по спрайтам в файле
         for row in rows:
             row = row.split(PAR_SEPARATOR)
-            sprite = SPRITES_NAMES[row[0]](*row[1:], self)
+            sprite = SPRITES[row[0]](*row[1:], self)
             self.add_sprite_in_groups(sprite)
 
     def add_sprite_in_groups(self, sprite: pygame.sprite.Sprite):
@@ -50,7 +44,7 @@ class Map:
         # обновления
         self.get_all_sprites_group().add(sprite)
 
-        if isinstance(sprite, Hero):
+        if isinstance(sprite, SPRITES[HERO_SPRITE_NAME]):
             # Группа только для игрока
             self.get_hero_group().add(sprite)
             self.set_hero(sprite)
