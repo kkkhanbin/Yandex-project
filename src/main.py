@@ -79,7 +79,7 @@ class Game:
 
                 self.update_current_windows(event)
 
-            self.tick_current_windows()
+            self.tick_current_windows(self.get_fps())
 
             # Рендер окон
             self.render_current_windows(self.get_screen())
@@ -118,9 +118,10 @@ class Game:
     def get_title(self) -> str:
         return self.title
 
-    def tick_current_windows(self):
+    def tick_current_windows(self, fps):
+        """Подобно фукнции tick из pygame.clock.tick(fps)"""
         for current_window in self.get_current_windows():
-            current_window.tick()
+            current_window.tick(fps)
 
     def update_current_windows(self, *args):
         for current_window in self.get_current_windows():

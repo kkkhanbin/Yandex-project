@@ -23,7 +23,7 @@ class Sprite(pygame.sprite.Sprite):
     def get_parent(self):
         return self.parent
 
-    def tick(self):
+    def tick(self, fps: int):
         pass
 
     def set_rect(self, rect: pygame.Rect):
@@ -31,3 +31,7 @@ class Sprite(pygame.sprite.Sprite):
 
     def get_rect(self) -> pygame.Rect:
         return self.rect
+
+    def set_pos(self, pos: tuple):
+        self.get_rect().x = pos[0]
+        self.get_rect().y = pos[1]

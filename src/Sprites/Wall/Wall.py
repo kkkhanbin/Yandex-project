@@ -13,7 +13,6 @@ class Wall(Sprite):
 
         self.image = pygame.transform.scale(
             ImageHandler.load_image(IMAGE_PATH), self.get_rect().size)
-        self.mask = pygame.mask.from_surface(self.get_image())
 
     def get_image(self) -> pygame.Surface:
         return self.image
