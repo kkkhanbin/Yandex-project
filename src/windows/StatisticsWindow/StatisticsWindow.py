@@ -4,7 +4,7 @@ import csv
 
 import pygame
 
-from constants.paths import PARAMETERS_PATH
+from constants.paths import PARAMETERS_PATH, LEVELS_PATH
 from constants.windows.statistics_window.statistics_window_settings import \
     CONFIRM_PUSH_BUTTON_NAME, CONFIRM_PUSH_BUTTON_POS, \
     CONFIRM_PUSH_BUTTON_SIZE, CONFIRM_PUSH_BUTTON_IMAGE_PATH, \
@@ -17,7 +17,7 @@ from constants.windows.windows_names import MAIN_MENU_WINDOW_NAME, \
     LEVEL_WINDOW_NAME
 from constants.level.level_settings import STARS_PAR_NAME, OPENED_PAR_NAME, \
     TIME_PAR_NAME, NAME_PAR_NAME, LEVEL_ICON_PATH, DEFAULT_PARAMETERS, \
-    PAR_SEPARATOR
+    PAR_SEPARATOR, UNLOCK_LEVEL_NAME
 
 from handlers.ConvertHandler.ConvertHandler import ConvertHandler
 from handlers.ImageHandler.ImageHandler import ImageHandler
@@ -39,6 +39,7 @@ class StatisticsWindow(Window):
         self.setup_level_info()
         self.save_in_data_base()
         self.save_in_level_parameters()
+        self.unlock_level()
 
         self.push_buttons = []
         self.add_push_buttons()
@@ -72,6 +73,17 @@ class StatisticsWindow(Window):
             (hp / (max_hp - min_hp)) *
             (MAX_NUMBER_OF_STARS - MIN_NUMBER_OF_STARS))
 
+        self.parameters_path = \
+            os.path.join(self.get_level_window().get_level_path(),
+                         PARAMETERS_PATH)
+
+        with open(self.get_parameters_path(), mode='r', encoding='utf-8') \
+                as parameters:
+            file_rows = list(
+                csv.DictReader(parameters, delimiter=PAR_SEPARATOR))[0]
+            self.unlock_level_path = \
+                os.path.join(LEVELS_PATH, file_rows[UNLOCK_LEVEL_NAME])
+
     def save_in_data_base(self):
         """Сохранение прогресса в БД"""
         handler = self.get_parent().get_data_base_handler()
@@ -88,28 +100,50 @@ class StatisticsWindow(Window):
 
         handler.commit()
 
-    def save_in_level_parameters(self):
-        """Сохранение прогресса в параметры уровня"""
-        parameters_path = \
-            os.path.join(self.get_level_window().get_level_path(),
-                         PARAMETERS_PATH)
-
-        with open(parameters_path, mode='r', encoding='utf-8') as parameters:
-            # Запоминаем содержмое файла
+    def update_parameters_file(self, path: str, func):
+        """Обновляет файл параметров уровня, исходя из его текущего наполнения.
+        В вашу функцию передается сохраненное значение - словарь, которое было
+        до его перезаписи, а функция должна менять это значение, после чего
+        новый словарь будет записан"""
+        with open(path, mode='r', encoding='utf-8') \
+                as parameters:
+            # Запоминаем содержимое файла
             file_rows = list(
                 csv.DictReader(parameters, delimiter=PAR_SEPARATOR))[0]
 
-        with open(parameters_path, mode='w+', encoding='utf-8') as parameters:
+        with open(path, mode='w+', encoding='utf-8') \
+                as parameters:
             writer = csv.DictWriter(parameters, delimiter=PAR_SEPARATOR,
                                     fieldnames=file_rows.keys())
-
             writer.writeheader()
-            file_rows[STARS_PAR_NAME] = \
-                self.get_stars_count() + int(file_rows[STARS_PAR_NAME])
-            file_rows[TIME_PAR_NAME] = \
-                self.get_time_count() + float(file_rows[TIME_PAR_NAME])
 
+            # Меняем полученные значения
+            func(file_rows)
+
+            # И записываем их обратно
             writer.writerow(file_rows)
+
+    def unlock_level(self):
+        """Открывает следующий уровень"""
+        self.update_parameters_file(
+            os.path.join(self.get_unlock_level_path(), PARAMETERS_PATH),
+            self.set_unlock_parameter)
+
+    def set_unlock_parameter(self, file_rows: dict):
+        """Функция созданная для update_parameters_file"""
+        file_rows[OPENED_PAR_NAME] = 'True'
+
+    def save_in_level_parameters(self):
+        """Сохранение прогресса в параметры уровня"""
+        self.update_parameters_file(self.get_parameters_path(),
+            self.add_parameters)
+
+    def add_parameters(self, file_rows: dict):
+        """Функция созданная для update_parameters_file"""
+        file_rows[STARS_PAR_NAME] = \
+            self.get_stars_count() + int(file_rows[STARS_PAR_NAME])
+        file_rows[TIME_PAR_NAME] = \
+            self.get_time_count() + float(file_rows[TIME_PAR_NAME])
 
     def add_stars(self):
         """Добавляем звезды"""
@@ -198,3 +232,9 @@ class StatisticsWindow(Window):
 
     def get_time_count_widget(self) -> TimeCount:
         return self.time_count_widget
+
+    def get_parameters_path(self) -> str:
+        return self.parameters_path
+
+    def get_unlock_level_path(self) -> str:
+        return self.unlock_level_path

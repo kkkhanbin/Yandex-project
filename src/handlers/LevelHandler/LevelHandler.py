@@ -4,7 +4,7 @@ import csv
 from constants.paths import LEVELS_PATH, PARAMETERS_PATH
 from constants.level.level_settings import STARS_PAR_NAME, OPENED_PAR_NAME, \
     TIME_PAR_NAME, NAME_PAR_NAME, LEVEL_ICON_PATH, DEFAULT_PARAMETERS, \
-    PAR_SEPARATOR
+    PAR_SEPARATOR, UNLOCK_LEVEL_NAME
 
 
 class LevelHandler:
@@ -38,12 +38,13 @@ class LevelHandler:
         opened = True if parameters[OPENED_PAR_NAME] == 'True' \
             else False
         name = parameters[NAME_PAR_NAME]
+        unlock_level = parameters[UNLOCK_LEVEL_NAME]
 
         return {STARS_PAR_NAME: stars, TIME_PAR_NAME: time,
-                OPENED_PAR_NAME: opened, NAME_PAR_NAME: name}
+                OPENED_PAR_NAME: opened, NAME_PAR_NAME: name,
+                UNLOCK_LEVEL_NAME: unlock_level}
 
     def normalize_level_parameters(self, level_path: str):
-        print('Выполняется normalize')
         """Заполняет колонки в csv файле"""
         with open(os.path.join(level_path, PARAMETERS_PATH),
                   encoding='utf-8', mode='w') as parameters_file:
