@@ -3,7 +3,7 @@ from abc import ABCMeta
 import pygame
 
 from constants.sprites.movable_sprite_settings import HIT_BOX_PADDING, \
-    MAX_JUMP_COUNT, JUMP_HEIGHT
+    MAX_JUMP_COUNT, JUMP_HEIGHT, OBSTACLES
 
 
 class MovableSprite(metaclass=ABCMeta):
@@ -17,7 +17,7 @@ class MovableSprite(metaclass=ABCMeta):
 
         # Движение
         self.hit_box_padding = min(self.get_rect().size) * HIT_BOX_PADDING
-        self.obstacles = []
+        self.obstacles = OBSTACLES
         self.vector = 0, 0
 
         # Урон
@@ -116,8 +116,8 @@ class MovableSprite(metaclass=ABCMeta):
         intersection = []
         for sprites in list1:
             for sprite in sprites:
-                for sprite_type in list2:
-                    if type(sprite) == sprite_type:
+                for sprite_name in list2:
+                    if sprite.__class__.__name__ == sprite_name:
                         intersection.append(sprite)
 
         return intersection

@@ -104,7 +104,7 @@ class ProfilesMenuWindow(Window):
 
         db_handler.update(
             'user_progress', {'game_time': 0, 'stars_count': 0},
-            {'user_name': f'"{user_name}"'})
+            {'user_name': user_name})
 
         db_handler.get_connection().commit()
 

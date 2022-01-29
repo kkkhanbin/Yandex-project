@@ -10,6 +10,8 @@ from constants.windows.level_window.map.map_settings import BORDERS_COLOR, \
     BORDERS_WIDTH, G
 from constants.gui.colors import BLACK
 
+from handlers.ExceptionHandler.ExceptionHandler import ExceptionHandler
+
 
 class Map:
     def __init__(self, parent, level_path: str, size: tuple, pos: tuple):
@@ -20,11 +22,12 @@ class Map:
         self.screen = pygame.Surface(self.get_rect().size)
 
         self.hero = None
-
         self.map = self.load_map()
 
+        # Значения по умолчанию
         self.borders_color = BORDERS_COLOR
         self.borders_width = BORDERS_WIDTH
+        self.background_color = BLACK
 
     def load_map(self):
         """Загрузка карты - распределение спрайтов по группам"""
@@ -35,9 +38,14 @@ class Map:
 
         # Проход по спрайтам в файле
         for row in rows:
-            row = row.split(PAR_SEPARATOR)
-            sprite = SPRITES[row[0]](*row[1:], self)
-            self.add_sprite_in_groups(sprite)
+            try:
+                row = row.split(PAR_SEPARATOR)
+                sprite = SPRITES[row[0]](*row[1:], self)
+                self.add_sprite_in_groups(sprite)
+            except TypeError as exception:
+                ExceptionHandler().log(exception)
+            except KeyError as exception:
+                ExceptionHandler().log(exception)
 
     def add_sprite_in_groups(self, sprite: pygame.sprite.Sprite):
         # Все спрайты добавляются в эту группу для удобного рендера и
@@ -58,10 +66,13 @@ class Map:
         self.all_sprites_group = pygame.sprite.Group()
 
     def render(self, screen: pygame.Surface):
-        self.get_screen().fill(BLACK)
+        self.get_screen().fill(self.get_background_color())
 
+        # Рамка
         pygame.draw.rect(screen, self.get_borders_color(), self.get_rect(),
                          self.get_borders_width())
+
+        # Спрайты
         self.get_all_sprites_group().draw(self.get_screen())
 
         screen.blit(self.get_screen(), self.get_rect())
@@ -110,3 +121,6 @@ class Map:
 
     def get_screen(self) -> pygame.Surface:
         return self.screen
+
+    def get_background_color(self) -> pygame.Color:
+        return self.background_color
