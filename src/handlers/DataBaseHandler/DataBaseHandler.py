@@ -20,7 +20,7 @@ class DataBaseHandler:
             '''
         if conditions:
             request += f'''
-            \nWHERE {' AND '.join(map(lambda item: ' = '.join(map(str, item)),
+            \nWHERE {' AND '.join(map(lambda item: f'{item[0]} = "{item[1]}"', 
                                       conditions.items()))}
             '''
 
@@ -48,13 +48,13 @@ class DataBaseHandler:
 
         request = f'''
         UPDATE {table_name}
-        SET {', '.join(map(lambda item: ' = '.join(map(str, item)),
+        SET {', '.join(map(lambda item: f'{item[0]} = "{item[1]}"',
                            values.items()))}
         '''
 
         if conditions:
             request += f'''
-            \nWHERE {' AND '.join(map(lambda item: ' = '.join(map(str, item)),
+            \nWHERE {' AND '.join(map(lambda item: f'{item[0]} = "{item[1]}"',
                                       conditions.items()))}
             '''
 
@@ -70,8 +70,11 @@ class DataBaseHandler:
 
         if conditions:
             request += f'''
-            \nWHERE {' AND '.join(map(lambda item: ' = '.join(map(str, item)),
+            \nWHERE {' AND '.join(map(lambda item: f'{item[0]} = "{item[1]}"',
                                       conditions.items()))}
             '''
 
         cursor.execute(request)
+
+    def commit(self):
+        self.get_connection().commit()

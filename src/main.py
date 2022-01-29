@@ -9,7 +9,7 @@ from constants.main_settings import FPS, SIZE, BACKGROUND_COLOR, \
 from constants.windows.windows_names import START_WINDOW_NAME, \
     MAIN_MENU_WINDOW_NAME, LEVELS_MENU_WINDOW_NAME, PROFILES_MENU_WINDOW_NAME,\
     RESTART_WINDOW_NAME, SETTINGS_WINDOW_NAME, LEVEL_EDITOR_WINDOW_NAME, \
-    LEVEL_WINDOW_NAME
+    LEVEL_WINDOW_NAME, STATISTICS_WINDOW_NAME
 from constants.data_base.data_base_settings import USER_NAMES, \
     USER_DATABASE_PATH
 
@@ -23,6 +23,7 @@ from windows.StartWindow.StartWindow import StartWindow
 from windows.LevelsMenuWindow.LevelsMenuWindow import LevelsMenuWindow
 from windows.LevelWindow.LevelWindow import LevelWindow
 from windows.ProfilesMenuWindow.ProfilesMenuWindow import ProfilesMenuWindow
+from windows.StatisticsWindow.StatisticsWindow import StatisticsWindow
 
 
 class Game:
@@ -64,9 +65,9 @@ class Game:
                     self.get_data_base_handler().insert(
                         'user_progress',
                         ('user_name', 'game_time', 'stars_count'),
-                        (f"'{user_name}'", 0, 0))
+                        (user_name, 0, 0))
 
-        self.get_data_base_handler().get_connection().commit()
+        self.get_data_base_handler().commit()
 
     def run(self):
         # Цикл игры
@@ -135,7 +136,8 @@ class Game:
              (MAIN_MENU_WINDOW_NAME, MainMenuWindow),
              (LEVELS_MENU_WINDOW_NAME, LevelsMenuWindow),
              (PROFILES_MENU_WINDOW_NAME, ProfilesMenuWindow),
-             (SETTINGS_WINDOW_NAME, SettingsWindow)]
+             (SETTINGS_WINDOW_NAME, SettingsWindow),
+             (STATISTICS_WINDOW_NAME, StatisticsWindow)]
 
         for window_name, window in windows_info:
             windows[window_name] = window

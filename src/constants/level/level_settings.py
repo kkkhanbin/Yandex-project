@@ -8,3 +8,7 @@ LEVEL_ICON_PATH = 'data/images/level/level_icon.png'
 
 PAR_SEPARATOR = ';'
 TUPLE_SEPARATOR = ','
+
+DEFAULT_PARAMETERS = \
+    [[STARS_PAR_NAME, TIME_PAR_NAME, OPENED_PAR_NAME, NAME_PAR_NAME],
+     [0, 0, 'True', 'None']]
