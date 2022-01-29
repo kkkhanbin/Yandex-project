@@ -39,6 +39,9 @@ class Map:
             sprite = SPRITES[row[0]](*row[1:], self)
             self.add_sprite_in_groups(sprite)
 
+        for sprite in self.get_all_sprites_group():
+            print(sprite.rect)
+
     def add_sprite_in_groups(self, sprite: pygame.sprite.Sprite):
         # Все спрайты добавляются в эту группу для удобного рендера и
         # обновления

@@ -68,10 +68,9 @@ class MovableSprite(metaclass=ABCMeta):
 
     def collided_obstacle(self, rect, t, r, b, l) -> bool:
         """Вызывается каждый раз при касании с препятствием или наоборот.
-        Параметры  t, r, b, l - top, left, bottom, right - это False или
-        спрайты, отвечающие за стороны спрайта, спрайт означает что
-        соответствующей стороной спрайт коснулся препятствия. rect это
-        столкновение с rect'ом спрайта  Возвращает булево значение,
+        Параметры  t, r, b, l - top, left, bottom, right - это списки,
+        содержащие спрайты, столкнувшиеся с соответствующей стороной. rect это
+        столкновение с rect'ом спрайта. Возвращает булево значение,
         говорящее о том, может ли спрайт двигаться дальше"""
         self.set_hook(bool(self.intersection([r, b, l])))
         self.set_jump_count(0 if self.intersection([r, b, l])
@@ -94,10 +93,11 @@ class MovableSprite(metaclass=ABCMeta):
         list2 = self.get_obstacles() if not list2 else list2
 
         intersection = []
-        for sprite in list1:
-            for sprite_type in list2:
-                if type(sprite) == sprite_type:
-                    intersection.append(sprite)
+        for sprites in list1:
+            for sprite in sprites:
+                for sprite_type in list2:
+                    if type(sprite) == sprite_type:
+                        intersection.append(sprite)
 
         return intersection
 
@@ -115,12 +115,12 @@ class MovableSprite(metaclass=ABCMeta):
         self.get_rect().x, self.get_rect().y = real_pos
         return return_value
 
-    def get_collided(self, func, sprite1: pygame.sprite.Sprite):
-        collided_sprite = False
+    def get_collided(self, func, sprite1: pygame.sprite.Sprite) -> list:
+        collided_sprites = []
         for sprite in self.get_all_sprites_group():
             if func(sprite1, sprite):
-                collided_sprite = sprite
-        return collided_sprite
+                collided_sprites.append(sprite)
+        return collided_sprites
 
     def get_hit_box(self, side: int=0) -> pygame.sprite.Sprite:
         """Возвращает спрайт - хитбокс. Возвращает именно спрайт, а не Rect

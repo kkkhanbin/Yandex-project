@@ -36,10 +36,12 @@ class Sprite(pygame.sprite.Sprite):
             ConvertHandler.str_to_tuple(value, float))
 
     def update(self, event: pygame.event.Event):
+        pass
+
+    def update_hp(self):
         if self.get_hp() <= self.get_min_hp():
             if self.__class__.__name__ == HERO_SPRITE_NAME:
-                print('Ты уже мертв')
-                pygame.time.set_timer(events.GAME_OVER_EVENT, 0)
+                pygame.time.set_timer(events.GAME_OVER_EVENT, 1, loops=1)
 
     def get_parent(self):
         return self.parent
@@ -92,6 +94,9 @@ class Sprite(pygame.sprite.Sprite):
     def get_all_sprites_group(self) -> pygame.sprite.Group:
         return self.get_parent().get_all_sprites_group()
 
+    def get_all_sprites_without_hero_group(self) -> pygame.sprite.Group:
+        return self.get_parent().get_all_sprites_without_hero_group()
+
     def get_damage(self) -> int:
         return self.damage
 
@@ -118,6 +123,7 @@ class Sprite(pygame.sprite.Sprite):
         self.set_hp_info(
             self.get_min_hp(), new_hp if new_hp <= self.get_max_hp() else
             self.get_max_hp(), self.get_max_hp())
+        self.update_hp()
 
     def set_hp_info(self, min_hp: int, hp: int, max_hp: int):
         self.hp_info = min_hp, hp, max_hp
