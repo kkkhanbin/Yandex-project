@@ -21,7 +21,7 @@ from constants.level.level_settings import STARS_PAR_NAME, OPENED_PAR_NAME, \
 
 from handlers.ConvertHandler.ConvertHandler import ConvertHandler
 from handlers.ImageHandler.ImageHandler import ImageHandler
-from handlers.LevelHandler.LevelHandler import LevelHandler
+from handlers.ExceptionHandler.ExceptionHandler import ExceptionHandler
 
 from widgets.Buttons.PushButton.PushButton import PushButton
 
@@ -36,6 +36,7 @@ class StatisticsWindow(Window):
 
         self.level_window = level_window
 
+        # Работа с csv и БД
         self.setup_level_info()
         self.save_in_data_base()
         self.save_in_level_parameters()
@@ -43,7 +44,11 @@ class StatisticsWindow(Window):
 
         self.push_buttons = []
         self.add_push_buttons()
+
+        self.stars = []
         self.add_stars()
+
+        self.time_count_widget = None
         self.add_time()
 
     def render(self, screen: pygame.Surface):
@@ -64,19 +69,23 @@ class StatisticsWindow(Window):
     def setup_level_info(self):
         """Установка нужных значений уровня для
         вывода их на экран и запись в БД"""
+
+        # Значения для удобства
         self.time_count = self.get_level_window().get_time_count()
         self.user_name = self.get_level_window().get_user_name()
-
-        min_hp, hp, max_hp = \
-            self.get_level_window().get_map().get_hero().get_hp_info()
-        self.stars_count = math.floor(
-            (hp / (max_hp - min_hp)) *
-            (MAX_NUMBER_OF_STARS - MIN_NUMBER_OF_STARS))
-
         self.parameters_path = \
             os.path.join(self.get_level_window().get_level_path(),
                          PARAMETERS_PATH)
 
+        # Звезды
+        min_hp, hp, max_hp = \
+            self.get_level_window().get_map().get_hero().get_hp_info()
+        # Соотношение ОЗ к общему ОЗ умножается на общее кол-во звезд
+        self.stars_count = math.floor(
+            (hp / (max_hp - min_hp)) *
+            (MAX_NUMBER_OF_STARS - MIN_NUMBER_OF_STARS))
+
+        # Путь до уровня, который нужно разблокировать
         with open(self.get_parameters_path(), mode='r', encoding='utf-8') \
                 as parameters:
             file_rows = list(
@@ -94,40 +103,51 @@ class StatisticsWindow(Window):
             {'user_name': self.get_user_name()}).fetchone()
 
         # Записываем измененную информацию о профиле
-        handler.update('user_progress', {'game_time': float(user_info[0]) +
-            self.get_time_count(), 'stars_count': int(user_info[1]) +
-            self.get_stars_count()}, {'user_name': self.get_user_name()})
-
-        handler.commit()
+        try:
+            handler.update(
+                'user_progress',
+                {'game_time': float(user_info[0]) + self.get_time_count(),
+                 'stars_count': int(user_info[1]) + self.get_stars_count()},
+                {'user_name': self.get_user_name()})
+        except ValueError as exception:
+            ExceptionHandler().log(exception)
+        except TypeError as exception:
+            ExceptionHandler().log(exception)
+        else:
+            handler.commit()
 
     def update_parameters_file(self, path: str, func):
         """Обновляет файл параметров уровня, исходя из его текущего наполнения.
         В вашу функцию передается сохраненное значение - словарь, которое было
         до его перезаписи, а функция должна менять это значение, после чего
         новый словарь будет записан"""
-        with open(path, mode='r', encoding='utf-8') \
-                as parameters:
-            # Запоминаем содержимое файла
-            file_rows = list(
-                csv.DictReader(parameters, delimiter=PAR_SEPARATOR))[0]
+        try:
+            with open(path, mode='r', encoding='utf-8') \
+                    as parameters:
+                # Запоминаем содержимое файла
+                file_rows = list(
+                    csv.DictReader(parameters, delimiter=PAR_SEPARATOR))[0]
 
-        with open(path, mode='w+', encoding='utf-8') \
-                as parameters:
-            writer = csv.DictWriter(parameters, delimiter=PAR_SEPARATOR,
-                                    fieldnames=file_rows.keys())
-            writer.writeheader()
+            with open(path, mode='w', encoding='utf-8') \
+                    as parameters:
+                writer = csv.DictWriter(parameters, delimiter=PAR_SEPARATOR,
+                                        fieldnames=file_rows.keys())
+                writer.writeheader()
 
-            # Меняем полученные значения
-            func(file_rows)
+                # Меняем полученные значения
+                func(file_rows)
 
-            # И записываем их обратно
-            writer.writerow(file_rows)
+                # И записываем их обратно
+                writer.writerow(file_rows)
+        except FileNotFoundError:
+            # Мы ничего не делаем, так как если файл не найден, значит просто
+            # не нужно ничего менять
+            pass
 
     def unlock_level(self):
         """Открывает следующий уровень"""
-        self.update_parameters_file(
-            os.path.join(self.get_unlock_level_path(), PARAMETERS_PATH),
-            self.set_unlock_parameter)
+        path = os.path.join(self.get_unlock_level_path(), PARAMETERS_PATH)
+        self.update_parameters_file(path, self.set_unlock_parameter)
 
     def set_unlock_parameter(self, file_rows: dict):
         """Функция созданная для update_parameters_file"""
@@ -136,7 +156,7 @@ class StatisticsWindow(Window):
     def save_in_level_parameters(self):
         """Сохранение прогресса в параметры уровня"""
         self.update_parameters_file(self.get_parameters_path(),
-            self.add_parameters)
+                                    self.add_parameters)
 
     def add_parameters(self, file_rows: dict):
         """Функция созданная для update_parameters_file"""
@@ -147,16 +167,16 @@ class StatisticsWindow(Window):
 
     def add_stars(self):
         """Добавляем звезды"""
-        self.stars = []
         size, pos, spacing = ConvertHandler.convert_percent(
             self.get_parent().get_screen_size(),
             STARS_SIZE, STARS_POS, (STARS_SPACING, STARS_SPACING))
         spacing = spacing[0]
-        star_width = size[0] / (MAX_NUMBER_OF_STARS - MIN_NUMBER_OF_STARS) -\
-                     spacing / 2
+        star_width = size[0] / (MAX_NUMBER_OF_STARS - MIN_NUMBER_OF_STARS) - \
+            spacing / 2
 
         image = ImageHandler.load_image(STAR_IMAGE_PATH, -1)
 
+        # Задаем каждой звезде ее позицию и размер
         for i in range(self.get_stars_count()):
             x, y = pos[0] + spacing + i * (star_width + spacing), \
                    pos[1] + spacing

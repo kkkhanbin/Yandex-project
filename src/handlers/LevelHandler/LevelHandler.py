@@ -6,6 +6,8 @@ from constants.level.level_settings import STARS_PAR_NAME, OPENED_PAR_NAME, \
     TIME_PAR_NAME, NAME_PAR_NAME, LEVEL_ICON_PATH, DEFAULT_PARAMETERS, \
     PAR_SEPARATOR, UNLOCK_LEVEL_NAME
 
+from handlers.ExceptionHandler.ExceptionHandler import ExceptionHandler
+
 
 class LevelHandler:
     def get_level_info(self, level_path: str) -> dict:
@@ -33,16 +35,19 @@ class LevelHandler:
         return list(reader)[0]
 
     def get_parameters_dict(self, parameters: dict) -> dict:
-        stars = int(parameters[STARS_PAR_NAME])
-        time = float(parameters[TIME_PAR_NAME])
-        opened = True if parameters[OPENED_PAR_NAME] == 'True' \
-            else False
-        name = parameters[NAME_PAR_NAME]
-        unlock_level = parameters[UNLOCK_LEVEL_NAME]
+        try:
+            stars = int(parameters[STARS_PAR_NAME])
+            time = float(parameters[TIME_PAR_NAME])
+            opened = True if parameters[OPENED_PAR_NAME] == 'True' \
+                else False
+            name = parameters[NAME_PAR_NAME]
+            unlock_level = parameters[UNLOCK_LEVEL_NAME]
 
-        return {STARS_PAR_NAME: stars, TIME_PAR_NAME: time,
-                OPENED_PAR_NAME: opened, NAME_PAR_NAME: name,
-                UNLOCK_LEVEL_NAME: unlock_level}
+            return {STARS_PAR_NAME: stars, TIME_PAR_NAME: time,
+                    OPENED_PAR_NAME: opened, NAME_PAR_NAME: name,
+                    UNLOCK_LEVEL_NAME: unlock_level}
+        except ValueError as exception:
+            ExceptionHandler().log(exception)
 
     def normalize_level_parameters(self, level_path: str):
         """Заполняет колонки в csv файле"""

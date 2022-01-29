@@ -15,6 +15,7 @@ from constants.data_base.data_base_settings import USER_NAMES, \
 
 from handlers.DataBaseHandler.DataBaseHandler import DataBaseHandler
 from handlers.WindowsLogHandler.WindowsLogHandler import WindowsLogHandler
+from handlers.ExceptionHandler.ExceptionHandler import ExceptionHandler
 
 from windows.Window import Window
 from windows.SettingsWindow.SettingsWindow import SettingsWindow
@@ -54,8 +55,9 @@ class Game:
 
     def normalize_data_base(self):
         """Автоисправление данных в БД"""
-        data = self.get_data_base_handler().select(
-            'user_progress', ('*',), {}).fetchall()
+        data = list(filter(lambda row: row[0] in USER_NAMES,
+                           self.get_data_base_handler().select(
+                               'user_progress', ('*',), {}).fetchall()))
 
         # Дополняет таблицу user_progress если в ней не хватает строк для
         # профилей
@@ -156,9 +158,7 @@ class Game:
         sys.exit()
 
 
-def start_game():
+if __name__ == '__main__':
+    sys.excepthook = ExceptionHandler.except_hook
     game = Game()
     game.run()
-
-
-start_game()

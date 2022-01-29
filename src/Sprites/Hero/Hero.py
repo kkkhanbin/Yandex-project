@@ -1,6 +1,6 @@
 import pygame
 
-from constants.sprites.hero.hero_settings import IMAGE_PATH, STEP, OBSTACLES, \
+from constants.sprites.hero.hero_settings import IMAGE_PATH, STEP, \
     ENEMIES, DESTINATIONS
 from constants.sprites.sprites_settings import DOOR_SPRITE_NAME
 from constants.windows.level_window.map.map_settings import G
@@ -32,7 +32,6 @@ class Hero(Sprite, MovableSprite):
         self.image = self.load_image(IMAGE_PATH, -1)
 
         # Движение (переопределяем)
-        self.obstacles = OBSTACLES
         self.enemies = ENEMIES
         self.destinations = DESTINATIONS
 

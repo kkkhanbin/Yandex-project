@@ -1,5 +1,7 @@
 import sqlite3
 
+from handlers.ExceptionHandler.ExceptionHandler import ExceptionHandler
+
 
 class DataBaseHandler:
     def __init__(self, connection: sqlite3.Connection):
@@ -24,7 +26,10 @@ class DataBaseHandler:
                                       conditions.items()))}
             '''
 
-        return cursor.execute(request)
+        try:
+            return cursor.execute(request)
+        except sqlite3.Error as exception:
+            ExceptionHandler().log(exception)
 
     def insert(self, table_name: str,
                columns_names: tuple, values: tuple) -> None:
@@ -37,10 +42,14 @@ class DataBaseHandler:
 
         request = f'''
         INSERT INTO {table_name}{columns_names}
-        VALUES({', '.join(map(str, values))})
+        VALUES({', '.join(map(lambda value: str(value) 
+        if type(value) != str else f'"{value}"', values))})
         '''
 
-        cursor.execute(request)
+        try:
+            cursor.execute(request)
+        except sqlite3.Error as exception:
+            ExceptionHandler().log(exception)
 
     def update(self, table_name: str,
                values: dict, conditions: dict) -> None:
@@ -58,7 +67,10 @@ class DataBaseHandler:
                                       conditions.items()))}
             '''
 
-        cursor.execute(request)
+        try:
+            cursor.execute(request)
+        except sqlite3.Error as exception:
+            ExceptionHandler().log(exception)
 
     def delete(self, table_name: str,
                conditions: dict) -> None:
@@ -74,7 +86,10 @@ class DataBaseHandler:
                                       conditions.items()))}
             '''
 
-        cursor.execute(request)
+        try:
+            cursor.execute(request)
+        except sqlite3.Error as exception:
+            ExceptionHandler().log(exception)
 
     def commit(self):
         self.get_connection().commit()

@@ -1,5 +1,5 @@
 from constants.sprites.cannon.bullet.bullet_settings import IMAGE_PATH, \
-    SPEED
+    SPEED, OBSTACLES
 from constants.sprites.sprites_settings import ANGLES, DIRECTIONS
 
 from Sprites.Sprite import Sprite
@@ -24,6 +24,7 @@ class Bullet(Sprite, MovableSprite):
 
         # Движение
         self.speed = SPEED
+        self.obstacles = OBSTACLES
 
         direction = ANGLES[self.get_direction()]
         self.set_direction((direction * 2) % 360)

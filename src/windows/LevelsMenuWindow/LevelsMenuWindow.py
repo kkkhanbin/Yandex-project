@@ -22,6 +22,7 @@ from handlers.TextHandler.TextHandler import TextHandler
 from handlers.ImageHandler.ImageHandler import ImageHandler
 from handlers.ConvertHandler.ConvertHandler import ConvertHandler
 from handlers.LevelHandler.LevelHandler import LevelHandler
+from handlers.ExceptionHandler.ExceptionHandler import ExceptionHandler
 
 
 class LevelsMenuWindow(Window):
@@ -57,7 +58,11 @@ class LevelsMenuWindow(Window):
             image = self.get_level_icon(level_info)
             min_size = ConvertHandler.convert_percent(
                 self.get_parent().get_screen_size(), LEVEL_ICON_MIN_SIZE)[0]
-            enabled = level_info[OPENED_PAR_NAME]
+            try:
+                enabled = level_info[OPENED_PAR_NAME]
+            except TypeError as exception:
+                ExceptionHandler().log(exception)
+                enabled = True
 
             level_push_button = \
                 PushButton(action_info, image, enabled, LEVEL_ICON_NAME,
@@ -74,8 +79,13 @@ class LevelsMenuWindow(Window):
         temp_screen = ImageHandler.load_image(LEVEL_ICON_PATH)
         size = temp_screen.get_rect().size
 
-        name = level_info[NAME_PAR_NAME]
-        opened = level_info[OPENED_PAR_NAME]
+        try:
+            name = level_info[NAME_PAR_NAME]
+            opened = level_info[OPENED_PAR_NAME]
+        except TypeError as exception:
+            ExceptionHandler().log(exception)
+            name, opened = '', False
+
         icon_color = OPENED_ICON_COLOR \
             if opened else CLOSED_ICON_COLOR
         font = pygame.font.Font(None, LEVELS_LAYOUT_FONT_SIZE)
