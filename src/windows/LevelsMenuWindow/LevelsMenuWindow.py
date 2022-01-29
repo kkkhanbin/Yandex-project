@@ -50,9 +50,8 @@ class LevelsMenuWindow(Window):
         for level_name in os.listdir(LEVELS_PATH):
             level_name = os.path.join(LEVELS_PATH, level_name)
 
+            action_info = self.flip_on_level_window, (level_name,), {}
             level_info = self.get_level_info(level_name)
-            action_info = self.flip_window, (self.get_parent().get_windows()
-                [LEVEL_WINDOW_NAME](level_name, self.get_parent()),), {}
             image = self.get_level_icon(level_info)
             min_size = LEVEL_ICON_MIN_SIZE
             enabled = level_info[OPENED_PAR_NAME]
@@ -63,6 +62,10 @@ class LevelsMenuWindow(Window):
             level_push_buttons.append(level_push_button)
 
         return level_push_buttons
+
+    def flip_on_level_window(self, level_name: str) -> Window:
+        self.flip_window(self.get_parent().get_windows()[LEVEL_WINDOW_NAME]\
+            (level_name, self.get_parent()))
 
     def get_level_info(self, level_path: str) -> dict:
         """Загружает информацию об уровне"""

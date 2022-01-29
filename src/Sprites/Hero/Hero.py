@@ -1,8 +1,10 @@
 import pygame
 
 from constants.sprites.hero.hero_settings import IMAGE_PATH, STEP, OBSTACLES, \
-    ENEMIES
+    ENEMIES, DESTINATIONS
+from constants.sprites.sprites_settings import DOOR_SPRITE_NAME
 from constants.windows.level_window.map.map_settings import G
+from constants import events
 
 from handlers.ConvertHandler.ConvertHandler import ConvertHandler
 
@@ -32,6 +34,7 @@ class Hero(Sprite, MovableSprite):
         # Движение (переопределяем)
         self.obstacles = OBSTACLES
         self.enemies = ENEMIES
+        self.destinations = DESTINATIONS
 
         self.set_direction(self.get_direction())
 
@@ -57,3 +60,9 @@ class Hero(Sprite, MovableSprite):
             self.set_direction((1, 0), (True, True, False))
 
         self.fall(g)
+
+    def reach_destination(self, sprite: pygame.sprite.Sprite):
+        """Вызывается при столкновении с пунктом назначения, sprite - спрайт,
+         с которым стокнулись"""
+        if sprite.__class__.__name__ == DOOR_SPRITE_NAME:
+            pygame.time.set_timer(events.GAME_COMPLETED_EVENT, 1, 1)

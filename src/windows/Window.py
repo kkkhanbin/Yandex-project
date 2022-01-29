@@ -20,8 +20,7 @@ class Window:
         pass
 
     def flip_window(self, window):
-        self.get_parent().delete_current_window(self)
-        self.get_parent().add_current_window(window)
+        self.get_parent().set_current_window(window)
 
     def get_parent(self):
         return self.parent

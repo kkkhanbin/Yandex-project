@@ -134,3 +134,8 @@ class Sprite(pygame.sprite.Sprite):
     def damage_received(self, damage: int):
         """Вызывается при получении урона"""
         self.add_hp(-damage)
+
+    def reach_destination(self, sprite: pygame.sprite.Sprite):
+        """Вызывается при столкновении с пунктом назначения, sprite - спрайт,
+         с которым стокнулись"""
+        pass

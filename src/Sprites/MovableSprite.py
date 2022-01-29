@@ -22,7 +22,10 @@ class MovableSprite(metaclass=ABCMeta):
 
         # Урон
         self.enemies = []
-        self.collided_enemies = pygame.sprite.Group()
+        self.collided_sprites = pygame.sprite.Group()
+
+        # Прохождение
+        self.destinations = []
 
     def move(self, vector: tuple):
         """Двигает на заданный вектор"""
@@ -79,15 +82,33 @@ class MovableSprite(metaclass=ABCMeta):
         if self.intersection([b]):
             self.set_vector((0, 0))
 
-        enemies = self.intersection([rect], self.get_enemies())
-        if enemies:
-            if not self.get_collided_enemies().has(enemies[0]):
-                self.damage_received(enemies[0].get_damage())
-                self.get_collided_enemies().add(enemies[0])
-        else:
-            self.get_collided_enemies().empty()
+        self.check_collided_sprites(
+            self.intersection([rect], self.get_destinations()),
+            self.reach_destination, lambda destination: destination,
+            self.get_destinations())
+
+        self.check_collided_sprites(
+            self.intersection([rect], self.get_enemies()),
+            self.damage_received, lambda enemy: enemy.get_damage(),
+            self.get_enemies())
 
         return not self.intersection([rect])
+
+    def check_collided_sprites(self, sprites: list, func, args_func,
+                               delete_group: list):
+        """sprites - спрайты, которые нужно проверить, func - выполняемая
+         функция для каждого спрайта, args_func - функция, возвращающая
+         значения для предыдущей функции, delete_group - список типо спрайтов,
+         которые нужно удалить если мы ни с кем не столкнулись"""
+        if sprites:
+            if not self.get_collided_sprites().has(*sprites):
+                for sprite in sprites:
+                    func(args_func(sprite))
+                self.get_collided_sprites().add(*sprites)
+        else:
+            for collided_sprite in self.get_collided_sprites():
+                if type(collided_sprite) in delete_group:
+                    self.get_collided_sprites().remove(collided_sprite)
 
     def intersection(self, list1, list2=None) -> list:
         list2 = self.get_obstacles() if not list2 else list2
@@ -187,5 +208,8 @@ class MovableSprite(metaclass=ABCMeta):
     def get_enemies(self) -> list:
         return self.enemies
 
-    def get_collided_enemies(self) -> pygame.sprite.Group:
-        return self.collided_enemies
+    def get_collided_sprites(self) -> pygame.sprite.Group:
+        return self.collided_sprites
+
+    def get_destinations(self) -> list:
+        return self.destinations

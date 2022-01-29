@@ -53,7 +53,7 @@ class LevelWindow(Window):
         print('ТЫ УМЕР!!!')
 
     def game_completed(self):
-        pass
+        print('ХАРОШ')
 
     def get_map(self) -> Map:
         return self.map
