@@ -39,7 +39,9 @@ class AnimatedSprite:
 
 
 def strip_from_sheet():
-    sheet = pygame.image.load(r"Yandex-project-develop\src\data\images\animations\Hero_Move.png").convert()
+    sheet = pygame.image.load(
+        r"Yandex-project-develop\src\data\images\animations\Hero_Move.png"
+    ).convert()
 
     rectangle = sheet.get_rect()
     rows = 3
