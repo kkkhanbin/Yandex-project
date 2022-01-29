@@ -5,7 +5,7 @@ import pygame
 pygame.init()
 
 from constants.main_settings import FPS, SIZE, BACKGROUND_COLOR, \
-    START_WINDOWS_NAMES, TITLE
+    START_WINDOWS_NAME, TITLE
 from constants.windows.windows_names import START_WINDOW_NAME, \
     MAIN_MENU_WINDOW_NAME, LEVELS_MENU_WINDOW_NAME, PROFILES_MENU_WINDOW_NAME,\
     RESTART_WINDOW_NAME, SETTINGS_WINDOW_NAME, LEVEL_EDITOR_WINDOW_NAME, \
@@ -14,6 +14,7 @@ from constants.data_base.data_base_settings import USER_NAMES, \
     USER_DATABASE_PATH
 
 from handlers.DataBaseHandler.DataBaseHandler import DataBaseHandler
+from handlers.WindowsLogHandler.WindowsLogHandler import WindowsLogHandler
 
 from windows.Window import Window
 from windows.SettingsWindow.SettingsWindow import SettingsWindow
@@ -38,8 +39,9 @@ class Game:
         # Настройка окон
         self.windows = {}
         self.add_windows(self.windows)
-        self.current_windows = []
-        self.add_start_windows(self.current_windows)
+
+        self.current_window = self.get_start_window()
+        self.windows_log = WindowsLogHandler([self.get_current_window()])
 
         # Настройка БД
         self.setup_data_base()
@@ -76,13 +78,14 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.quit()
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        self.get_windows_log().pop()
+                        self.current_window = self.get_windows_log().get()[-1]
+                self.get_current_window().update(event)
 
-                self.update_current_windows(event)
-
-            self.tick_current_windows(self.get_fps())
-
-            # Рендер окон
-            self.render_current_windows(self.get_screen())
+            self.get_current_window().tick(self.get_fps())
+            self.get_current_window().render(self.get_screen())
 
             pygame.display.flip()
             self.get_clock().tick(round(self.get_fps()))
@@ -109,8 +112,8 @@ class Game:
     def get_fps(self) -> float:
         return self.fps
 
-    def get_current_windows(self) -> list:
-        return self.current_windows
+    def get_current_window(self) -> Window:
+        return self.current_window
 
     def get_screen_size(self) -> tuple:
         return self.get_screen().get_size()
@@ -118,28 +121,12 @@ class Game:
     def get_title(self) -> str:
         return self.title
 
-    def tick_current_windows(self, fps):
-        """Подобно фукнции tick из pygame.clock.tick(fps)"""
-        for current_window in self.get_current_windows():
-            current_window.tick(fps)
+    def set_current_window(self, window: Window):
+        self.current_window = window
+        self.get_windows_log().add([window])
 
-    def update_current_windows(self, *args):
-        for current_window in self.get_current_windows():
-            current_window.update(*args)
-
-    def render_current_windows(self, screen: pygame.Surface):
-        for current_window in self.get_current_windows():
-            current_window.render(screen)
-
-    def delete_current_window(self, window: Window):
-        self.get_current_windows().remove(window)
-
-    def add_current_window(self, window: Window):
-        self.get_current_windows().append(window)
-
-    def add_start_windows(self, windows: list) -> None:
-        for window_name in START_WINDOWS_NAMES:
-            windows.append(self.get_windows()[window_name](self))
+    def get_start_window(self) -> Window:
+        return self.get_windows()[START_WINDOWS_NAME](self)
 
     def add_windows(self, windows: dict) -> None:
         windows_info = \
@@ -155,6 +142,9 @@ class Game:
 
     def get_windows(self) -> dict:
         return self.windows
+
+    def get_windows_log(self) -> WindowsLogHandler:
+        return self.windows_log
 
     def quit(self):
         """Выход из игры"""
