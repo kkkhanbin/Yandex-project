@@ -5,6 +5,6 @@ from Sprites.Door.Door import Door
 
 IMAGE_PATH = 'data/images/sprites/hero/hero.png'
 STEP = 200  # Пикселей в секунду
-OBSTACLES = [Wall, Cannon, Bullet]
+OBSTACLES = [Wall, Cannon]
 ENEMIES = [Bullet]
 DESTINATIONS = [Door]

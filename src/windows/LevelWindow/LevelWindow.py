@@ -2,6 +2,7 @@ import pygame
 
 from handlers.ConvertHandler.ConvertHandler import ConvertHandler
 
+from constants.windows.windows_names import STATISTICS_WINDOW_NAME
 from constants.windows.level_window.level_window_settings import MAP_POS, \
     MAP_SIZE, HP_BAR_POS, HP_BAR_SIZE
 from constants import events
@@ -12,13 +13,17 @@ from windows.LevelWindow.HpBar.HpBar import HpBar
 
 
 class LevelWindow(Window):
-    def __init__(self, level_path: str, *args):
+    def __init__(self, level_path: str, user_name: str, *args):
         super(LevelWindow, self).__init__(*args)
 
         self.level_path = level_path
+        self.user_name = user_name
 
         self.add_map()
         self.add_hp_bar()
+
+        # Записываем время в секундах
+        self.time_count = 0
 
     def add_map(self):
         self.map = Map(
@@ -33,6 +38,7 @@ class LevelWindow(Window):
 
     def tick(self, fps: int):
         self.get_map().tick(fps)
+        self.add_time_count(1 / fps)
 
     def render(self, screen: pygame.Surface):
         super().render(screen)
@@ -49,11 +55,16 @@ class LevelWindow(Window):
             self.game_completed()
 
     def game_over(self):
-        # TODO заглушка
-        print('ТЫ УМЕР!!!')
+        self.restart()
 
     def game_completed(self):
-        print('ХАРОШ')
+        window = self.get_parent().get_windows()\
+            [STATISTICS_WINDOW_NAME](self, self.get_parent())
+        self.flip_window(window)
+
+    def restart(self):
+        self.__init__(self.get_level_path(), self.get_user_name(),
+                      self.get_parent())
 
     def get_map(self) -> Map:
         return self.map
@@ -63,3 +74,13 @@ class LevelWindow(Window):
 
     def get_hp_bar(self) -> HpBar:
         return self.hp_bar
+
+    def get_time_count(self) -> float:
+        return self.time_count
+
+    def add_time_count(self, time: float):
+        self.time_count += time
+        return self
+
+    def get_user_name(self) -> str:
+        return self.user_name
